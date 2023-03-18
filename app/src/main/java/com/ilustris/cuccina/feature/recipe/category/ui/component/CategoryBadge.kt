@@ -1,4 +1,4 @@
-package com.ilustris.cuccina.feature.home.ui.component
+package com.ilustris.cuccina.feature.recipe.category.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
@@ -15,12 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
@@ -37,12 +35,12 @@ fun CategoryBadge(category: Category, categorySelected: (Category) -> Unit) {
         Image(
             painterResource(id = category.icon),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-            contentDescription = category.description,
+            contentDescription = category.title,
             modifier = Modifier
                 .size(24.dp)
                 .padding(4.dp)
         )
-        Text(text = category.description.toUpperCase(Locale.current), style = MaterialTheme.typography.labelMedium)
+        Text(text = category.title.toUpperCase(Locale.current), style = MaterialTheme.typography.labelMedium)
     }
 
 }
