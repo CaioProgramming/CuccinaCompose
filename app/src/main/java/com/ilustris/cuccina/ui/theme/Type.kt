@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 import com.ilustris.cuccina.R
 
 // Set of Material typography styles to start with
-val mavenPro = FontFamily(Font(R.font.maven_pro_variable_font_wght))
+val mavenPro = FontFamily(Font(R.font.nunito_black))
 val dosis = FontFamily(Font(R.font.dosis_variable_font_wght))
 val Typography = Typography(
     bodyLarge = TextStyle(
@@ -32,7 +32,7 @@ val Typography = Typography(
     headlineLarge = TextStyle(
         fontFamily = mavenPro,
         fontWeight = FontWeight.Black,
-        fontSize = 26.sp
+        fontSize = 28.sp
     )
     /* Other default text styles to override
     titleLarge = TextStyle(

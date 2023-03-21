@@ -20,17 +20,17 @@ import androidx.core.view.ViewCompat
 import com.google.android.material.color.MaterialColors
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    primary = MaterialColor.Orange800,
+    secondary = MaterialColor.DeepOrange800,
+    tertiary = MaterialColor.OrangeA700,
     background = MaterialColor.Black,
     surface = MaterialColor.Gray900,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    primary = MaterialColor.Orange800,
+    secondary = MaterialColor.DeepOrange800,
+    tertiary = MaterialColor.OrangeA700,
     background = MaterialColor.White,
     surface = MaterialColor.Gray200
 
