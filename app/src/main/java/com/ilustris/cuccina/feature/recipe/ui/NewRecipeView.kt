@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalCoilApi::class)
+
 package com.ilustris.cuccina.feature.recipe.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,22 +20,53 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
-import org.checkerframework.checker.units.qual.m
 
 const val NEW_RECIPE_ROUTE = "NEW_RECIPE_ROUTE"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewRecipeView() {
-    Column(modifier = Modifier.padding(16.dp)) {
+
+    var selectedImage: Uri? by remember {
+        mutableStateOf(null)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {
+        selectedImage = it
+    }
+    val scrollState = rememberScrollState()
+
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState)
+            .padding(10.dp)
+    ) {
         var recipeName by remember {
             mutableStateOf("")
         }
+        var recipeDescription by remember {
+            mutableStateOf("")
+        }
+        val painter =
+            if (selectedImage != null) rememberImagePainter(selectedImage) else painterResource(id = R.drawable.cherry)
+        val buttonModifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+        val buttonShape = RoundedCornerShape(defaultRadius)
+        val buttonPaddingValues = PaddingValues(vertical = 4.dp)
+        val buttonHorizontalArrangement = Arrangement.Start
+        val buttonVerticalAlignment = Alignment.CenterVertically
         Image(
-            painterResource(id = R.drawable.cherry),
+            painter,
             contentDescription = "Enviar foto de receita",
             modifier = Modifier
                 .fillMaxWidth()
@@ -43,15 +77,19 @@ fun NewRecipeView() {
                 )
                 .padding(16.dp)
                 .clip(RoundedCornerShape(defaultRadius))
+                .clickable {
+                    galleryLauncher.launch("image/*")
+                }
         )
 
         TextField(
             value = recipeName,
             onValueChange = { recipeName = it },
-            textStyle = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
+            textStyle = MaterialTheme.typography.bodyMedium,
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
             ),
             modifier = Modifier
                 .background(Color.Transparent)
@@ -66,9 +104,40 @@ fun NewRecipeView() {
             }
         )
 
+        TextField(
+            value = recipeDescription,
+            onValueChange = { recipeDescription = it },
+            textStyle = MaterialTheme.typography.bodyMedium,
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
+            ),
+            modifier = Modifier
+                .background(Color.Transparent)
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                    RoundedCornerShape(
+                        defaultRadius
+                    )
+                )
+                .clip(RoundedCornerShape(defaultRadius))
+                .padding(vertical = 16.dp)
+                .fillMaxWidth(),
+            placeholder = {
+                Text(
+                    text = "Descrição da receita",
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        )
+
+
+
         Text(
             text = "Ingredientes",
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(vertical = 4.dp)
                 .fillMaxWidth()
@@ -78,22 +147,15 @@ fun NewRecipeView() {
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-
-        LazyColumn() {}
-
-        val buttonModifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp)
-        val buttonShape = RoundedCornerShape(defaultRadius)
-        val buttonPaddingValues = PaddingValues(vertical = 4.dp)
-        val buttonHorizontalArrangement = Arrangement.Start
-        val buttonVerticalAlignment = Alignment.CenterVertically
+        //ADD FOREACH TO ADD INGREDIENTS
 
         Button(
             onClick = { /*TODO*/ },
             shape = buttonShape,
             modifier = buttonModifier,
-            contentPadding = buttonPaddingValues
+            contentPadding = buttonPaddingValues,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
         ) {
             Row(
                 modifier = buttonModifier,
@@ -110,20 +172,21 @@ fun NewRecipeView() {
 
         }
 
-        Text(text = "Passo a Passo", style = MaterialTheme.typography.headlineSmall)
+        Text(text = "Passo a Passo", style = MaterialTheme.typography.bodyLarge)
 
         Text(
             text = "Coloque cada etapa para fazer sua receita, de forma simples e objetiva.",
             style = MaterialTheme.typography.labelSmall
         )
 
-        LazyColumn() {}
-
+        //ADD FOREACH TO ADD STEPS
         Button(
             onClick = { /*TODO*/ },
             shape = buttonShape,
             modifier = buttonModifier,
-            contentPadding = buttonPaddingValues
+            contentPadding = buttonPaddingValues,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
         ) {
             Row(
                 modifier = buttonModifier,
@@ -140,24 +203,25 @@ fun NewRecipeView() {
 
         }
 
-
-        Button(onClick = { /*TODO*/ }) {
-            Row(modifier = Modifier.fillMaxWidth(),  horizontalArrangement = Arrangement.SpaceBetween) {
+        Button(
+            onClick = { /*TODO*/ }, contentPadding = buttonPaddingValues, shape = buttonShape,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = buttonModifier.padding(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(text = "Confirmar")
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.round_keyboard_arrow_right_24),
-                    contentDescription = null
-                )
             }
         }
-
     }
+
 }
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun NewRecipeFormPreview() {
-    CuccinaTheme() {
+    CuccinaTheme {
         NewRecipeView()
     }
 }

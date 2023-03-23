@@ -1,15 +1,18 @@
 package com.ilustris.cuccina.navigation
 
+import ai.atick.material.MaterialColor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -24,6 +27,7 @@ import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
 import com.ilustris.cuccina.feature.home.ui.HomeView
 import com.ilustris.cuccina.feature.recipe.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.ui.NewRecipeView
+import com.ilustris.cuccina.ui.theme.defaultRadius
 
 enum class BottomNavItem(val title: String, var icon: Int = R.drawable.cherry, val route: String) {
     HOME(title = "Home", route = HOME_ROUTE, icon = R.drawable.round_home_24),
@@ -55,8 +59,14 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
 @Composable
 fun BottomNavigation(navController: NavController) {
     androidx.compose.material.BottomNavigation(
-        backgroundColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground
+        backgroundColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialColor.White,
+        modifier = Modifier.clip(
+            RoundedCornerShape(
+                topEnd = defaultRadius,
+                topStart = defaultRadius
+            )
+        )
     ) {
         val routes = BottomNavItem.values()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -70,11 +80,16 @@ fun BottomNavigation(navController: NavController) {
                     Image(
                         painterResource(item.icon),
                         contentDescription = item.title,
-                        modifier = androidx.compose.ui.Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
+                        colorFilter = ColorFilter.tint(
+                            if (isSelected) MaterialColor.White else MaterialColor.White.copy(
+                                alpha = 0.5f
+                            )
+                        )
                     )
                 },
-                selectedContentColor = MaterialTheme.colorScheme.primary,
-                unselectedContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                selectedContentColor = MaterialColor.White,
+                unselectedContentColor = MaterialColor.White.copy(alpha = 0.3f),
                 onClick = {
                     navController.navigate(item.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
