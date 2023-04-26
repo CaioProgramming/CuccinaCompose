@@ -24,12 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
-import com.ilustris.cuccina.feature.home.ui.HomeView
-import com.ilustris.cuccina.feature.recipe.ui.NEW_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.form.presentation.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.navigation.BottomNavigation
 import com.ilustris.cuccina.navigation.NavigationGraph
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

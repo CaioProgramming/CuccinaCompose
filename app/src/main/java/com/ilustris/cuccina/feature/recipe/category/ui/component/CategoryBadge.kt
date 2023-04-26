@@ -24,23 +24,42 @@ import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
 
 @Composable
-fun CategoryBadge(category: Category, categorySelected: (Category) -> Unit) {
+fun CategoryBadge(
+    category: Category,
+    selectedCategory: Category?,
+    categorySelected: (Category) -> Unit
+) {
+
+    fun isSelected() = category == selectedCategory
 
     Button(
-        onClick = { categorySelected(category) },
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onBackground),
+        onClick = {
+            categorySelected(category)
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onBackground
+        ),
         shape = RoundedCornerShape(defaultRadius),
-        modifier = Modifier.wrapContentSize(align = Alignment.CenterStart).padding(12.dp)
+        modifier = Modifier
+            .wrapContentSize(align = Alignment.CenterStart)
+            .padding(12.dp)
     ) {
+        val contentColor =
+            if (isSelected()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
         Image(
             painterResource(id = category.icon),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+            colorFilter = ColorFilter.tint(contentColor),
             contentDescription = category.title,
             modifier = Modifier
                 .size(24.dp)
                 .padding(4.dp)
         )
-        Text(text = category.title.toUpperCase(Locale.current), style = MaterialTheme.typography.labelMedium)
+        Text(
+            text = category.title.toUpperCase(Locale.current),
+            style = MaterialTheme.typography.labelMedium,
+            color = contentColor
+        )
     }
 
 }
@@ -48,10 +67,10 @@ fun CategoryBadge(category: Category, categorySelected: (Category) -> Unit) {
 @Preview
 @Composable
 fun BadgePreview() {
-    CuccinaTheme() {
-        LazyRow() {
+    CuccinaTheme {
+        LazyRow {
             items(Category.values().size) {
-                CategoryBadge(Category.values()[it]) {
+                CategoryBadge(Category.values()[it], Category.values().random()) {
 
                 }
             }
