@@ -7,9 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -20,11 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.ilustris.cuccina.R
-import com.ilustris.cuccina.ui.theme.defaultRadius
 
 @Composable
 fun InstructionItem(
@@ -38,59 +36,60 @@ fun InstructionItem(
 
     ConstraintLayout {
         val (instructionCountField, instructionText, instructionIcon) = createRefs()
-
-        Text(
-            text = (count).toString(),
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.background,
-                fontWeight = FontWeight.Black
-            ),
-
-            modifier = Modifier
-                .constrainAs(instructionCountField) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(defaultRadius))
-                .padding(8.dp)
-                .wrapContentSize(
-                    Alignment.Center
-                )
-                .padding(4.dp)
-
-
-        )
         val instructionValue = remember {
             mutableStateOf(instruction)
         }
-
-        fun enableIcon(instruction: String) = instruction.isNotEmpty()
-
-        TextField(
-            value = instructionValue.value,
-            enabled = editable,
-            label = { if (editable) Text(text = "Escreva a ${count}º instrução") },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-            ),
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .constrainAs(instructionText) {
                     start.linkTo(instructionCountField.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                    end.linkTo(instructionIcon.start)
+                    end.linkTo(if (icon != null) instructionIcon.start else parent.end)
                 }
-                .padding(horizontal = 20.dp, vertical = 4.dp),
-            onValueChange = {
-                instructionValue.value = it
-            }, textStyle = MaterialTheme.typography.bodyMedium
-        )
+                .padding(16.dp)
+                .fillMaxWidth()) {
+
+
+            Text(
+                text = (count).toString(),
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp),
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Black
+                ),
+            )
+            TextField(
+                value = instructionValue.value,
+                enabled = editable,
+                label = {
+                    if (editable) Text(
+                        text = "Escreva a ${count}º instrução",
+                        modifier = Modifier.wrapContentSize()
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                ),
+                onValueChange = {
+                    instructionValue.value = it
+                },
+                textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground)
+            )
+        }
+
+
+
+        fun enableIcon(instruction: String) = instruction.isNotEmpty()
 
         AnimatedVisibility(
             visible = enableIcon(instructionValue.value),
@@ -123,11 +122,11 @@ fun InstructionItem(
 
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun InstructionItemPreview() {
     InstructionItem(
-        instruction = "Frite o bacon",
+        instruction = "Frite o bacon e reserve em um prato com papel toalha. ",
         count = 1,
         icon = R.drawable.baseline_add_24,
         editable = true,

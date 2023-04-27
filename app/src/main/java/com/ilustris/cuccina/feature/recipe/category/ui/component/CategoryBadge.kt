@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,7 +58,7 @@ fun CategoryBadge(
         )
         Text(
             text = category.title.toUpperCase(Locale.current),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = if (isSelected()) FontWeight.Black else FontWeight.Medium),
             color = contentColor
         )
     }

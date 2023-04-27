@@ -89,5 +89,5 @@ fun IngredientItem(
 @Preview(showBackground = true)
 @Composable
 fun IngredientItemPreview() {
-    IngredientItem(Ingredient("Alcatra", 2, IngredientType.KILOGRAMS)) {}
+    IngredientItem(Ingredient("Alcatra", 300, IngredientType.KILOGRAMS)) {}
 }

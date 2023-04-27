@@ -2,9 +2,12 @@ package com.ilustris.cuccina.feature.recipe.ingredient.domain.model
 
 object IngredientMapper {
 
-    fun getIngredientSymbol(ingredientName: String) =
-        emojisDictionary().find { it.relatives.contains(ingredientName.trim().lowercase()) }?.emoji
-            ?: "❓"
+    fun getIngredientSymbol(ingredientName: String): String {
+        if (ingredientName.isBlank()) return "❓"
+        return emojisDictionary().find { emojiDic ->
+            emojiDic.relatives.toString().trim().contains(ingredientName.lowercase().trim(), true)
+        }?.emoji ?: "❓"
+    }
 
 
     private fun emojisDictionary() = listOf(
@@ -47,7 +50,9 @@ object IngredientMapper {
                 "lagarto",
                 "fraldinha",
                 "cupim",
-                "costela"
+                "costela",
+                "t bone",
+                "contra filé",
             )
         ),
         EmojiDic(
@@ -72,47 +77,7 @@ object IngredientMapper {
         EmojiDic("🍞", listOf("pão", "pães", "bread")),
         EmojiDic("🍖", listOf("linguiça", "linguiças", "sausage", "bisteca", "bistecas")),
         EmojiDic("🥓", listOf("bacon", "bacons")),
-        EmojiDic(
-            "🥩",
-            listOf(
-                "carne de porco",
-                "carne suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno",
-                "carne de porco",
-                "carne de suína",
-                "carne de suíno"
-            )
-        ),
+        EmojiDic("🥩", listOf("carne de porco", "carne suína", "bife suíno")),
         EmojiDic("🦐", listOf("camarao", "camarão", "shrimp")),
         EmojiDic("🍝", listOf("macarrão", "macarrão", "pasta")),
         EmojiDic("🍚", listOf("arroz", "rice")),
@@ -146,6 +111,7 @@ object IngredientMapper {
         EmojiDic("🍄", listOf("cogumelo", "cogumelos", "mushroom", "mushrooms")),
         EmojiDic("🥜", listOf("amendoim", "amendoins", "peanut", "peanuts")),
         EmojiDic("🌰", listOf("castanha", "castanhas", "nut", "nuts")),
+        EmojiDic("🍫", listOf("chocolate", "chocolates", "chocolate")),
 
 
         )

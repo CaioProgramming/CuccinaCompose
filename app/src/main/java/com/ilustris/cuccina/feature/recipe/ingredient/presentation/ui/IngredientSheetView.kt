@@ -3,9 +3,6 @@
 package com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui
 
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -22,7 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.ListItemPicker
-import com.chargemap.compose.numberpicker.NumberPicker
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.Ingredient
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientMapper
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientType
@@ -45,15 +41,21 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
         mutableStateOf(0)
     }
 
-    fun getRange(texture: Texture): IntRange {
-        return when (texture) {
-            Texture.LIQUID -> {
-                0..1000
-            }
-            Texture.SOLID -> {
-                0..100
-            }
+    fun getRange(texture: Texture): List<Int> {
+        val rangeList = ArrayList<Int>()
+        val step = when (texture) {
+            Texture.LIQUID, Texture.POUND -> 10
+            Texture.UNIT -> 1
         }
+        val limit = when (texture) {
+            Texture.LIQUID, Texture.POUND -> 1000
+            Texture.UNIT -> 100
+        }
+        for (i in 0..limit step step) {
+            rangeList.add(i)
+        }
+        return rangeList
+
     }
 
 
@@ -62,13 +64,14 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
 
     Log.i(
         "IngredientSheet",
-        "IngredientSheet: current ingredient -> ${ingredientName.value}(type: ${ingredientType.value})"
+        "IngredientSheet: current ingredient -> ${ingredientName.value} = $quantity (type: ${ingredientType.value})"
     )
 
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 32.dp)
     ) {
 
         Text(
@@ -92,9 +95,10 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
         TextField(
             value = ingredientName.value,
             onValueChange = { ingredientName.value = it },
-            label = {
+            placeholder = {
                 Text(
                     text = "Nome do ingrediente",
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Center)
                 )
@@ -117,44 +121,45 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
                 .fillMaxWidth()
         )
 
-        val quantityFormatted = "${quantity.value} ${ingredientType.value.description}"
-        Text(
-            text = quantityFormatted,
-            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onBackground),
-            modifier = Modifier.padding(4.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-            NumberPicker(
-                range = getRange(ingredientType.value.texture),
-                dividersColor = MaterialTheme.colorScheme.primary,
+            ListItemPicker(
                 value = quantity.value,
                 onValueChange = {
                     quantity.value = it
                 },
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground)
-
+                modifier = Modifier.fillMaxWidth(0.5f),
+                dividersColor = Color.Transparent,
+                list = getRange(ingredientType.value.texture),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
             )
 
             ListItemPicker(
                 value = ingredientType.value.abreviation,
-                label = { it },
-                dividersColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.fillMaxWidth(),
+                label = { it.lowercase() },
+                dividersColor = Color.Transparent,
                 onValueChange = {
                     val selectedIngredientType =
                         IngredientType.values().find { type -> type.abreviation == it }!!
                     ingredientType.value = selectedIngredientType
-                    if (quantity.value > getRange(ingredientType.value.texture).last) {
-                        quantity.value = getRange(ingredientType.value.texture).last
+                    if (quantity.value > getRange(ingredientType.value.texture).last()) {
+                        quantity.value = getRange(ingredientType.value.texture).last()
                     }
                     Log.i(
                         "IngredientSheet",
                         "IngredientSheet: selected type: $selectedIngredientType"
                     )
                 },
-                list = IngredientType.values().toList().map { it.abreviation },
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground)
+                list = IngredientType.values().toList().sortedBy { it.description }
+                    .map { it.description },
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground)
             )
+
+
         }
 
 
@@ -162,24 +167,20 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
             return ingredientName.value.isNotEmpty() && quantity.value > 0
         }
 
-        AnimatedVisibility(
-            visible = enableSaveButton(),
-            enter = slideInVertically(),
-            exit = fadeOut()
-        ) {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(defaultRadius),
-                onClick = {
-                    newIngredient(
-                        Ingredient(
-                            ingredientName.value,
-                            quantity.value,
-                            type = ingredientType.value
-                        )
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enableSaveButton(),
+            shape = RoundedCornerShape(defaultRadius),
+            onClick = {
+                newIngredient(
+                    Ingredient(
+                        ingredientName.value,
+                        quantity.value,
+                        type = ingredientType.value
                     )
-                }) { Text(text = "Salvar ingrediente") }
-        }
+                )
+            }) { Text(text = "Salvar ingrediente") }
 
     }
 }

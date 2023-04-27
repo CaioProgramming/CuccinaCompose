@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ilustris.cuccina.R
@@ -49,13 +50,21 @@ fun StepSheet(newStep: (Step) -> Unit) {
                 Text(
                     text = "Adicionar etapa",
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 )
 
                 TextField(
                     value = stepTitle.value,
                     onValueChange = { stepTitle.value = it },
-                    label = { Text(text = "Nome da etapa") },
+                    label = {
+                        Text(
+                            text = "Nome da etapa",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -86,7 +95,7 @@ fun StepSheet(newStep: (Step) -> Unit) {
                     count = index + 1,
                     icon = R.drawable.iconmonstr_line_one_horizontal_lined,
                     iconDescription = "Remover instrução",
-                    editable = true,
+                    editable = false,
                     onSelectIcon = {
                         instructions.remove(it)
                     })
@@ -109,6 +118,8 @@ fun StepSheet(newStep: (Step) -> Unit) {
                                 defaultRadius
                             )
                         ), onClick = {
+                        val step = Step(stepTitle.value, ArrayList(instructions.toList()))
+                        Log.i("StepSheet", "StepSheet: saving steps -> $step")
                         newStep(Step(stepTitle.value, ArrayList(instructions.toList())))
                     }) { Text(text = "Salvar etapa") }
                 }

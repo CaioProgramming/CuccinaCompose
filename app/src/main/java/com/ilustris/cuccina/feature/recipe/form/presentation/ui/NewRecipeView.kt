@@ -30,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +57,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
 
     val recipe = newRecipeViewModel?.recipe?.observeAsState()?.value
 
-    val selectedImage = recipe?.photo?.let { Uri.parse(it) }
+    val selectedImage = if (recipe?.photo?.isNotEmpty() == true) Uri.parse(recipe.photo) else null
 
     val ingredients = recipe?.ingredients?.toMutableList()
 
@@ -80,6 +79,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
     val bottomSheetState =
         androidx.compose.material.rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
+    Log.i("NewRecipeView", "NewRecipeView: current recipe $recipe")
 
     ModalBottomSheetLayout(sheetContent = {
         if (sheetOption.value == "ingredient") {
@@ -92,6 +92,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
             }
         } else {
             StepSheet {
+                Log.i("NewRecipeView", "NewRecipeView: new step $it")
                 newRecipeViewModel?.updateRecipeSteps(it)
                 scope.launch {
                     bottomSheetState.hide()
@@ -102,8 +103,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
 
         LazyColumn(
             Modifier
-                .fillMaxWidth()
-                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             item {
@@ -118,34 +118,41 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                 var selectedCategory: Category by remember {
                     mutableStateOf(categories.first())
                 }
-                val painter =
-                    if (selectedImage != null) rememberImagePainter(selectedImage) else painterResource(
-                        id = R.drawable.cherry
-                    )
+                val painter = rememberImagePainter(selectedImage ?: R.drawable.kitchen_placeholder)
+
 
                 Image(
                     painter,
                     contentDescription = "Enviar foto de receita",
-                    contentScale = ContentScale.Crop,
+                    contentScale = if (selectedImage != null) ContentScale.Crop else ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
                         .clip(RoundedCornerShape(defaultRadius))
-                        .border(
-                            1.dp,
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                            RoundedCornerShape(defaultRadius)
-                        )
                         .clickable {
                             galleryLauncher.launch("image/*")
                         }
                 )
 
-                Text(
-                    text = "Adicione uma foto da receita",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                AnimatedVisibility(
+                    visible = selectedImage == null,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Text(
+                        text = "Adicione uma foto da receita",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onBackground.copy(
+                                alpha = 0.3f
+                            ), textAlign = TextAlign.Center
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                }
+
+
 
                 LazyRow {
                     items(categories.size) {
@@ -197,15 +204,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
                     modifier = Modifier
-                        .background(Color.Transparent)
-                        .border(
-                            1.dp,
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-                            RoundedCornerShape(
-                                defaultRadius
-                            )
-                        )
-                        .clip(RoundedCornerShape(defaultRadius))
+                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
                         .padding(vertical = 16.dp)
                         .fillMaxWidth(),
                     placeholder = {
@@ -222,19 +221,35 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                     text = "Ingredientes",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier
-                        .padding(vertical = 4.dp)
+                        .padding(8.dp)
                         .fillMaxWidth()
                 )
                 Text(
-                    text = "Coloque todos os ingredientes que você utiliza na sua receita(até os secretos :P).",
+                    text = "Coloque os melhores ingredientes para sua receita e deixe ela ainda mais saborosa. ",
                     style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(8.dp)
                 )
 
-                LazyRow {
+                LazyRow(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
 
+
+                    items(ingredients?.size ?: 0) { index ->
+                        ingredients?.get(index)?.let { ingredient ->
+                            IngredientItem(
+                                ingredient = ingredient,
+                                longPress = { selecteIngredient ->
+                                    newRecipeViewModel.removeRecipeIngredient(selecteIngredient)
+                                })
+                        }
+
+                    }
                     item {
-
                         IconButton(
                             onClick = {
                                 sheetOption.value = "ingredient"
@@ -260,32 +275,31 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                         }
                     }
 
-                    items(ingredients?.size ?: 0) { index ->
-                        ingredients?.get(index)?.let { ingredient ->
-                            IngredientItem(
-                                ingredient = ingredient,
-                                longPress = { selecteIngredient ->
-                                    newRecipeViewModel.removeRecipeIngredient(selecteIngredient)
-                                })
-                        }
-
-                    }
-
 
                 }
+
+                Divider(
+                    Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
+                )
+
             }
 
             item {
                 Text(
                     text = "Passo a Passo",
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
 
                 Text(
                     text = "Coloque cada etapa para fazer sua receita, de forma simples e objetiva.",
                     style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 
@@ -300,9 +314,8 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
 
             val buttonModifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp)
             val buttonShape = RoundedCornerShape(0.dp)
-            val buttonPaddingValues = PaddingValues(vertical = 4.dp)
+            val buttonPaddingValues = PaddingValues(16.dp)
             val buttonHorizontalArrangement = Arrangement.Start
             val buttonVerticalAlignment = Alignment.CenterVertically
 
@@ -316,9 +329,10 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                     shape = buttonShape,
                     modifier = buttonModifier,
                     contentPadding = buttonPaddingValues,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
-                    colors =
-                    ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    )
                 ) {
                     Row(
                         modifier = buttonModifier,
@@ -334,6 +348,13 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                     }
 
                 }
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
+                )
             }
 
             fun enableButton(recipe: Recipe?) =
@@ -355,7 +376,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                             modifier = buttonModifier.padding(horizontal = 10.dp),
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            Text(text = "Confirmar")
+                            Text(text = "Publicar")
                         }
                     }
                 }

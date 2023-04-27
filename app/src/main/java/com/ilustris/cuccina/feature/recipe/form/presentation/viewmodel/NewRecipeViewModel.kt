@@ -26,6 +26,7 @@ class NewRecipeViewModel @Inject constructor(
 
 
     fun saveRecipe() {
+        viewState.postValue(NewRecipeViewState.Loading)
         viewModelScope.launch(Dispatchers.IO) {
             viewState.postValue(NewRecipeViewState.Loading)
             recipe.value?.let {
@@ -78,6 +79,7 @@ class NewRecipeViewModel @Inject constructor(
     }
 
     fun updateRecipeSteps(step: Step) {
+        Log.i(javaClass.simpleName, "updateRecipeSteps: adding step -> $step")
         recipe.postValue(
             recipe.value?.copy(
                 steps = recipe.value?.steps?.plus(step) ?: listOf(step)
