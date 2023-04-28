@@ -1,13 +1,20 @@
 package com.ilustris.cuccina.feature.recipe.ingredient.domain.model
 
+import android.util.Log
+
 object IngredientMapper {
 
-    fun getIngredientSymbol(ingredientName: String): String {
-        if (ingredientName.isBlank()) return "❓"
-        return emojisDictionary().find { emojiDic ->
-            emojiDic.relatives.toString().trim().contains(ingredientName.lowercase().trim(), true)
-        }?.emoji ?: "❓"
-    }
+    fun getIngredientSymbol(ingredientName: String) = emojisDictionary().find {
+        val ingredient = ingredientName.lowercase().trim()
+        if (ingredient.isEmpty()) return "❓"
+        Log.i(
+            javaClass.simpleName,
+            "getIngredientSymbol: searching for $ingredient in ${it.ingredientNames}"
+        )
+        it.ingredientNames.any { names ->
+            ingredient.contains(names, true)
+        }
+    }?.emoji ?: "❓"
 
 
     private fun emojisDictionary() = listOf(
@@ -112,11 +119,10 @@ object IngredientMapper {
         EmojiDic("🥜", listOf("amendoim", "amendoins", "peanut", "peanuts")),
         EmojiDic("🌰", listOf("castanha", "castanhas", "nut", "nuts")),
         EmojiDic("🍫", listOf("chocolate", "chocolates", "chocolate")),
+        EmojiDic("🍯", listOf("mel", "honey", "honeys", "mels"))
+    )
 
-
-        )
-
-    data class EmojiDic(val emoji: String, val relatives: List<String>)
+    data class EmojiDic(val emoji: String, val ingredientNames: List<String>)
 
 }
 

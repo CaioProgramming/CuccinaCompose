@@ -6,10 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.service.RecipeService
-import com.ilustris.cuccina.feature.recipe.form.presentation.viewstate.NewRecipeViewState
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.Ingredient
 import com.ilustris.cuccina.feature.recipe.step.domain.model.Step
 import com.silent.ilustriscore.core.model.BaseViewModel
+import com.silent.ilustriscore.core.model.DataException
+import com.silent.ilustriscore.core.model.ViewModelBaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,19 +22,23 @@ class NewRecipeViewModel @Inject constructor(
     override val service: RecipeService
 ) : BaseViewModel<Recipe>(application) {
 
-    val viewState = MutableLiveData<NewRecipeViewState>()
     val recipe = MutableLiveData(Recipe())
 
 
     fun saveRecipe() {
-        viewState.postValue(NewRecipeViewState.Loading)
+        updateViewState(ViewModelBaseState.LoadingState)
         viewModelScope.launch(Dispatchers.IO) {
-            viewState.postValue(NewRecipeViewState.Loading)
+            updateViewState(ViewModelBaseState.LoadingState)
             recipe.value?.let {
-                service.addData(it)
-                viewState.postValue(NewRecipeViewState.Success)
+                val saveTask =
+                    service.addData(it.copy(author = service.currentUser()?.displayName ?: ""))
+                if (saveTask.isSuccess) {
+                    updateViewState(ViewModelBaseState.DataSavedState(it))
+                } else {
+                    updateViewState(ViewModelBaseState.ErrorState(saveTask.error.errorException))
+                }
             } ?: kotlin.run {
-                viewState.postValue(NewRecipeViewState.Error)
+                updateViewState(ViewModelBaseState.ErrorState(DataException.UNKNOWN))
             }
         }
 
@@ -93,5 +98,9 @@ class NewRecipeViewModel @Inject constructor(
                 steps = recipe.value?.steps?.minus(step)?.plus(step) ?: listOf(step)
             )
         )
+    }
+
+    fun updateRecipeCategory(category: String) {
+        recipe.postValue(recipe.value?.copy(category = category))
     }
 }

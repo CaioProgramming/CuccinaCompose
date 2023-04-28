@@ -2,14 +2,16 @@
 
 package com.ilustris.cuccina.feature.recipe.step.presentation.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import android.util.Log
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,57 +19,112 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.ilustris.cuccina.R
 
 @Composable
 fun InstructionItem(
     instruction: String = "",
+    savedIngredients: List<String> = emptyList(),
     count: Int,
-    icon: Int? = null,
-    iconDescription: String,
     editable: Boolean,
-    onSelectIcon: (String) -> Unit
+    isLastItem: Boolean = false,
+    icon: Int? = null,
+    iconDescription: String? = "",
+    onSelectInstruction: (String) -> Unit,
 ) {
 
-    ConstraintLayout {
-        val (instructionCountField, instructionText, instructionIcon) = createRefs()
-        val instructionValue = remember {
-            mutableStateOf(instruction)
+
+    fun annotatedIngredient(instruction: String, color: Color) = buildAnnotatedString {
+        append(instruction)
+        Log.i("InstructionItem", "annotatedIngredient: validating ingredients -> $savedIngredients")
+        savedIngredients.forEach { ingredient ->
+            if (instruction.contains(ingredient, true)) {
+                addStyle(
+                    SpanStyle(
+                        color = color,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    start = instruction.indexOf(ingredient),
+                    end = (instruction.indexOf(ingredient) + ingredient.length)
+                )
+            }
         }
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .constrainAs(instructionText) {
-                    start.linkTo(instructionCountField.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(if (icon != null) instructionIcon.start else parent.end)
-                }
-                .padding(16.dp)
-                .fillMaxWidth()) {
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        val animatedSize by animateDpAsState(
+            targetValue = 25.dp,
+            animationSpec = tween(2500, easing = FastOutSlowInEasing)
+        )
 
 
+        val dividerModifier = Modifier
+            .width(2.dp)
+            .height(animatedSize)
+            .background(MaterialTheme.colorScheme.onBackground)
+            .padding(horizontal = 16.dp)
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
                 text = (count).toString(),
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(MaterialTheme.colorScheme.onBackground)
                     .padding(16.dp),
                 style = MaterialTheme.typography.headlineSmall.copy(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Black
                 ),
             )
+            if (!isLastItem) {
+                Divider(modifier = dividerModifier)
+            }
+        }
+
+        val instructionValue = remember {
+            mutableStateOf(instruction)
+        }
+
+        val instructionTextModifier = Modifier.fillMaxWidth()
+
+        if (editable) {
             TextField(
                 value = instructionValue.value,
-                enabled = editable,
-                label = {
-                    if (editable) Text(
+                modifier = instructionTextModifier,
+                trailingIcon = {
+                    if (instructionValue.value.isNotEmpty()) {
+                        icon?.let {
+                            IconButton(onClick = {
+                                onSelectInstruction(instructionValue.value)
+                                instructionValue.value = ""
+                            }, content = {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = icon),
+                                    contentDescription = iconDescription
+                                )
+                            })
+                        }
+                    }
+
+
+                },
+                placeholder = {
+                    Text(
                         text = "Escreva a ${count}º instrução",
                         modifier = Modifier.wrapContentSize()
                     )
@@ -83,55 +140,49 @@ fun InstructionItem(
                 onValueChange = {
                     instructionValue.value = it
                 },
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground)
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Start
+                )
+            )
+        } else {
+            Text(
+                text = annotatedIngredient(
+                    instructionValue.value,
+                    MaterialTheme.colorScheme.primary
+                ),
+                modifier = instructionTextModifier.clickable {
+                    onSelectInstruction(instructionValue.value)
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Start
+                ),
             )
         }
-
-
-
-        fun enableIcon(instruction: String) = instruction.isNotEmpty()
-
-        AnimatedVisibility(
-            visible = enableIcon(instructionValue.value),
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.constrainAs(instructionIcon) {
-                end.linkTo(parent.end)
-                top.linkTo(instructionText.top)
-                bottom.linkTo(instructionText.bottom)
-            }
-        ) {
-            icon?.let {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = icon),
-                    contentDescription = iconDescription,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .clickable {
-                            onSelectIcon(instructionValue.value)
-                            instructionValue.value = ""
-                        }
-                )
-            }
-
-        }
-
-
     }
-
-
 }
 
 @Preview(showBackground = true)
 @Composable
 fun InstructionItemPreview() {
-    InstructionItem(
-        instruction = "Frite o bacon e reserve em um prato com papel toalha. ",
-        count = 1,
-        icon = R.drawable.baseline_add_24,
-        editable = true,
-        iconDescription = "Adicionar instrução"
-    ) {
+    Column {
+        listOf(
+            "Frite o bacon e reserve em um prato com papel toalha. ",
+            "Seque a carne com papel toalha e tempere com sal e pimenta-do-reino. ",
+            "Deixe descansar por 10 minutos.",
+            "Seque a carne com papel toalha e tempere com sal e pimenta-do-reino. ",
+        ).forEachIndexed { index, s ->
+            InstructionItem(
+                instruction = s,
+                savedIngredients = listOf("bacon", "carne"),
+                count = index + 1,
+                editable = index % 2 == 0,
+                isLastItem = index == 3,
+                icon = R.drawable.iconmonstr_line_one_horizontal_lined,
+            ) {
 
+            }
+        }
     }
 }

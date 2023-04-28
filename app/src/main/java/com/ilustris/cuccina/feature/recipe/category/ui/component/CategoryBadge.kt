@@ -44,7 +44,7 @@ fun CategoryBadge(
         shape = RoundedCornerShape(defaultRadius),
         modifier = Modifier
             .wrapContentSize(align = Alignment.CenterStart)
-            .padding(12.dp)
+            .padding(4.dp)
     ) {
         val contentColor =
             if (isSelected()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground

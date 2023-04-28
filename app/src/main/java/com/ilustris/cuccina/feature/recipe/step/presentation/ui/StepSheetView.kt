@@ -22,13 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ilustris.cuccina.R
+import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.Ingredient
 import com.ilustris.cuccina.feature.recipe.step.domain.model.Step
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
 
 
 @Composable
-fun StepSheet(newStep: (Step) -> Unit) {
+fun StepSheet(savedIngredients: List<Ingredient>, newStep: (Step) -> Unit) {
 
     CuccinaTheme {
         val stepTitle = remember {
@@ -83,21 +84,22 @@ fun StepSheet(newStep: (Step) -> Unit) {
                     count = getInstructionCount(),
                     icon = R.drawable.baseline_add_24,
                     iconDescription = "Adicionar instrução",
-                    editable = true,
-                    onSelectIcon = {
-                        instructions.add(it)
-                    })
+                    editable = true
+                ) {
+                    instructions.add(it)
+                }
             }
 
             items(instructions.size) { index ->
                 InstructionItem(
                     instruction = instructions[index],
+                    savedIngredients = savedIngredients.map { it.name },
                     count = index + 1,
+                    editable = true,
                     icon = R.drawable.iconmonstr_line_one_horizontal_lined,
                     iconDescription = "Remover instrução",
-                    editable = false,
-                    onSelectIcon = {
-                        instructions.remove(it)
+                    onSelectInstruction = {
+                        instructions.removeAt(index)
                     })
             }
 
@@ -133,5 +135,5 @@ fun StepSheet(newStep: (Step) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun StepSheetPreview() {
-    StepSheet(newStep = {})
+    StepSheet(newStep = {}, savedIngredients = emptyList())
 }

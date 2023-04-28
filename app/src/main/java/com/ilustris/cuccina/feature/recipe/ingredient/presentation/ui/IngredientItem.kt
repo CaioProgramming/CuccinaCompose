@@ -73,15 +73,23 @@ fun IngredientItem(
 
         }
         val quantityFormatted = "${ingredient.quantity}${ingredient.type.abreviation}"
-        Text(text = quantityFormatted,
-            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.background),
+        AnimatedVisibility(visible = ingredient.quantity > 0,
+            enter = expandVertically(),
+            exit = fadeOut(),
             modifier = Modifier
                 .constrainAs(quantityText) {
                     end.linkTo(emojiText.end)
                     bottom.linkTo(emojiText.bottom)
-                }
-                .background(MaterialTheme.colorScheme.primary, CircleShape)
-                .padding(4.dp))
+                }) {
+            Text(
+                text = quantityFormatted,
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.background),
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    .padding(4.dp)
+            )
+        }
+
     }
 
 }

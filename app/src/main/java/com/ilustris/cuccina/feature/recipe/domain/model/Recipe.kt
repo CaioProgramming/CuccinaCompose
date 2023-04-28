@@ -14,5 +14,6 @@ data class Recipe(
     var author: String = "",
     var ingredients: List<Ingredient> = emptyList(),
     var steps: List<Step> = emptyList(),
-    var likes: List<String> = emptyList()
+    var likes: List<String> = emptyList(),
+    var category: String = "",
 ) : BaseBean(id)
