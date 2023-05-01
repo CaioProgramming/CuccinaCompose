@@ -13,15 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.*
+import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
+import androidx.recyclerview.widget.RecyclerView.VERTICAL
+import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.ui.component.RecipeCard
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 
 @Composable
 fun RecipeGroupList(title: String? = null, orientation: Int, count: Int) {
 
-    Column() {
+    Column {
         title?.let {
             Text(
                 text = it,
@@ -34,7 +35,8 @@ fun RecipeGroupList(title: String? = null, orientation: Int, count: Int) {
         LazyColumn {
             items(count) {
                 RecipeCard(
-                    cardModifier = Modifier
+                    recipe = Recipe(),
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
                 )
@@ -42,21 +44,25 @@ fun RecipeGroupList(title: String? = null, orientation: Int, count: Int) {
         }
 
     } else {
-        LazyRow() {
+        LazyRow {
             items(count) {
-                RecipeCard(cardModifier = Modifier.size(250.dp, 100.dp))
+                RecipeCard(recipe = Recipe(), modifier = Modifier.size(250.dp, 100.dp))
             }
         }
     }
     
-    Box(modifier = Modifier.fillMaxWidth().padding(10.dp).height(1.dp).background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)))
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(10.dp)
+        .height(1.dp)
+        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)))
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun RecipeListPreview() {
     CuccinaTheme {
-        Column() {
+        Column {
             RecipeGroupList("Receitas Novas", HORIZONTAL, 5)
             RecipeGroupList("Receitas disponíveis", VERTICAL, 3)
         }

@@ -35,10 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
@@ -48,6 +44,7 @@ import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.Ingredient
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.IngredientSheet
 import com.ilustris.cuccina.feature.recipe.step.presentation.ui.StepItem
 import com.ilustris.cuccina.feature.recipe.step.presentation.ui.StepSheet
+import com.ilustris.cuccina.feature.recipe.ui.component.StateComponent
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import com.skydoves.landscapist.ImageOptions
@@ -109,32 +106,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
 
 
         if (formState == ViewModelBaseState.LoadingState) {
-            Column {
-                val celebrateComposition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(R.raw.cakerun)
-                )
-
-                val celebrateProgress by animateLottieCompositionAsState(
-                    celebrateComposition,
-                    isPlaying = true,
-                )
-
-                LottieAnimation(
-                    celebrateComposition,
-                    celebrateProgress,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.5f)
-                )
-
-                Text(
-                    text = "Salvando receita...",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.headlineMedium
-                )
-
-            }
+            StateComponent(R.raw.cakerun, "Salvando receita...")
 
         } else {
             LazyColumn(

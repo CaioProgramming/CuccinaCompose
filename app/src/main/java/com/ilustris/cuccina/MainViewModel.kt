@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 Log.e(javaClass.simpleName, "checkUser: require auth no user founded -> $user")
                 state.postValue(MainState.RequireLogin)
             } else {
-                Log.i(javaClass.simpleName, "checkUser: user founded -> $user")
+                Log.i(javaClass.simpleName, "checkUser: user founded -> ${user.uid}")
                 state.postValue(MainState.Success)
             }
         }

@@ -49,7 +49,7 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
         )
     ) {
         composable(BottomNavItem.HOME.route) {
-            HomeView()
+            HomeView(hiltViewModel())
         }
 
         composable(BottomNavItem.NEW_RECIPE.route) {
