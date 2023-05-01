@@ -1,0 +1,109 @@
+{
+  "project_info": {
+    "project_number": "481541057548",
+    "firebase_url": "https://recipes-br.firebaseio.com",
+    "project_id": "recipes-br",
+    "storage_bucket": "recipes-br.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481541057548:android:bf57a4286b0dfc54b19229",
+        "android_client_info": {
+          "package_name": "com.ilustris.cuccina"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481541057548-0onst0pplh52p07qg58ck1iuj8em7e69.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ilustris.cuccina",
+            "certificate_hash": "e52ea948ad8eb3370c325822e60b1550052192ac"
+          }
+        },
+        {
+          "client_id": "481541057548-rqjsrkh7cn8cogeot32uogkd0l1rgnrr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4rV0UpihaZoQYvqVQp_sclQDLbFP8PJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481541057548-rqjsrkh7cn8cogeot32uogkd0l1rgnrr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481541057548:android:d68384fe9916b2cc",
+        "android_client_info": {
+          "package_name": "com.inlustris.cuccina"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481541057548-1km8qn578n9dc28uuvgemq8931h623r8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inlustris.cuccina",
+            "certificate_hash": "e52ea948ad8eb3370c325822e60b1550052192ac"
+          }
+        },
+        {
+          "client_id": "481541057548-2a76goh3rq7gmq98m2nt3m1nt9ej3ure.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inlustris.cuccina",
+            "certificate_hash": "27f9c3e4d6329afb5ec5c475f97e4c1a6fe0f664"
+          }
+        },
+        {
+          "client_id": "481541057548-mf43m3u2hsuct4vlpg9st64kt9h2hli7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inlustris.cuccina",
+            "certificate_hash": "7079f2e50adb51d3144acf654427b19b72193d6c"
+          }
+        },
+        {
+          "client_id": "481541057548-mli40fdfppu6tc0obicm56m01enp9ucu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.inlustris.cuccina",
+            "certificate_hash": "de7b5b429ceba25618c823f243aa01a9bc44156c"
+          }
+        },
+        {
+          "client_id": "481541057548-rqjsrkh7cn8cogeot32uogkd0l1rgnrr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4rV0UpihaZoQYvqVQp_sclQDLbFP8PJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481541057548-rqjsrkh7cn8cogeot32uogkd0l1rgnrr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

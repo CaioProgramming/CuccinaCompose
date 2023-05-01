@@ -2,23 +2,29 @@ package com.ilustris.cuccina.feature.recipe.ingredient.domain.model
 
 data class Ingredient(val name: String, val quantity: Int, val type: IngredientType)
 
-enum class IngredientType(val description: String, val abreviation: String) {
-    POUNDS("Grama", "g"),
-    UNITY("Unidade", "uni"),
-    KILOGRAMS("Kilo", "kg"),
-    LITERS("Litro", "l"),
-    MILLILITERS("Mililitro", "ml"),
-    SOUP("Colher de sopa", "cs"),
-    TEA("Colher de chá", "chá"),
-    DESSERT("Colher de sobremesa", "csb"),
-    TEAPOT("Xícara e chá", "xíc"),
-    CUPCOFFE("Xícara de café", "xcf"),
-    CUP("Copo", "cp"),
-    PIECE("Peça","pç"),
-    PACKAGE("Pacote", "pc"),
-    POT("Xícara", "x"),
-    CENTIMETERS("Centímetros", "cm"),
-    DECILITER("Decilitro", "dl"),
-    CENTILITER("Centilitro", "cl")
+enum class IngredientType(val description: String, val abreviation: String, val texture: Texture) {
+    POUNDS("Grama(s)", "g", Texture.POUND),
+    UNITY("Unidade(s)", "uni", Texture.UNIT),
+    KILOGRAMS("Kilo(s)", "kg", Texture.UNIT),
+    LITERS("Litro(s)", "l", Texture.LIQUID),
+    MILLILITERS("Mililitro(s)", "ml", Texture.LIQUID),
+    SOUP("Colher(es) de sopa", "cs", Texture.UNIT),
+    TEA("Colher(es) de chá", "chá", Texture.UNIT),
+    DESSERT("Colher(es) de sobremesa", "csb", Texture.LIQUID),
+    TEAPOT("Xícara(s) de chá", "xíc", Texture.UNIT),
+    CUPCOFFE("Xícara de café", "xcf", Texture.UNIT),
+    CUP("Copo(s)", "cp", Texture.UNIT),
+    PIECE("Peça(s)", "pç", Texture.UNIT),
+    PACKAGE("Pacote(s)", "pc", Texture.UNIT),
+    POT("Xícara(s)", "x", Texture.UNIT),
+    PINCH("Pitada(s)", "pt", Texture.UNIT),
+    CENTIMETERS("Centímetro(s)", "cm", Texture.UNIT),
+    DECILITER("Decilitro(s)", "dl", Texture.LIQUID),
+    CENTILITER("Centilitro(s)", "cl", Texture.LIQUID),
+    TASTE("A gosto", "", Texture.UNDEFINED)
 
+}
+
+enum class Texture {
+    UNIT, POUND, LIQUID, UNDEFINED
 }

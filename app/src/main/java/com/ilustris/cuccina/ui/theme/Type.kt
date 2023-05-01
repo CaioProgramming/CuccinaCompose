@@ -32,7 +32,7 @@ val Typography = Typography(
     headlineLarge = TextStyle(
         fontFamily = mavenPro,
         fontWeight = FontWeight.Black,
-        fontSize = 26.sp
+        fontSize = 28.sp
     )
     /* Other default text styles to override
     titleLarge = TextStyle(
