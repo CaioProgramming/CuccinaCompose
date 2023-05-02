@@ -1,15 +1,15 @@
 package com.ilustris.cuccina.feature.recipe.ui.component
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -23,7 +23,10 @@ fun StateComponent(
     action: (() -> Unit)? = null,
     buttonText: String? = null
 ) {
-    Column {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val celebrateComposition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(animation)
         )
@@ -38,7 +41,7 @@ fun StateComponent(
             celebrateProgress,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.5f)
+                .fillMaxHeight(0.3f)
         )
 
 
@@ -50,7 +53,9 @@ fun StateComponent(
         )
 
         if (action != null && buttonText != null) {
-            Button(onClick = action) {
+            Button(onClick = action, modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)) {
                 Text(text = buttonText)
             }
         }

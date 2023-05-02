@@ -19,12 +19,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
         object Error : MainState()
         object Success : MainState()
         object RequireLogin : MainState()
+        object HideNavigation : MainState()
+        object ShowNavigation : MainState()
     }
 
     val state = MutableLiveData<MainState>()
 
     fun checkUser() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.i(javaClass.simpleName, "checkUser: checking user")
             val user = FirebaseAuth.getInstance().currentUser
             if (user == null) {
                 Log.e(javaClass.simpleName, "checkUser: require auth no user founded -> $user")
@@ -49,6 +52,16 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 updateState(MainState.Success)
             }
         }
+    }
+
+    fun hideNavigation() {
+        Log.i(javaClass.simpleName, "hideNavigation: updating state to hide navigation")
+        updateState(MainState.HideNavigation)
+    }
+
+    fun showNavigation() {
+        Log.i(javaClass.simpleName, "showNavigation: updating state to show navigation")
+        updateState(MainState.ShowNavigation)
     }
 
 

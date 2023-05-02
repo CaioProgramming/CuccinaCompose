@@ -7,9 +7,13 @@
 package com.ilustris.cuccina
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -43,11 +47,15 @@ class MainActivity : ComponentActivity() {
             val appName = LocalContext.current.getString(R.string.app_name)
             CuccinaTheme {
                 val navController = rememberNavController()
+                val viewModel: MainViewModel = hiltViewModel()
+
                 var title by remember {
                     mutableStateOf(appName)
                 }
-                val viewModel: MainViewModel = hiltViewModel()
-                viewModel.checkUser()
+                var showNavigation by remember {
+                    mutableStateOf(true)
+                }
+
 
                 val appState = viewModel.state.observeAsState()
 
@@ -68,28 +76,52 @@ class MainActivity : ComponentActivity() {
                 }
 
 
-                Scaffold(topBar = {
-                    TopAppBar(
-                        title = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(
-                                    painterResource(id = R.drawable.cherry),
-                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-                                    contentDescription = "category",
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .padding(4.dp)
-                                )
-                                Text(
-                                    text = title,
-                                    style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black)
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-                    )
-                }, bottomBar = { BottomNavigation(navController = navController) }) {
+                fun showAppBar(state: MainViewModel.MainState?): Boolean {
+                    Log.i(javaClass.simpleName, "showAppBar: actual state -> $state")
+                    return state != MainViewModel.MainState.HideNavigation
+                }
 
+                showNavigation = showAppBar(appState.value)
+
+                Scaffold(topBar = {
+
+                    AnimatedVisibility(
+                        visible = showNavigation,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        TopAppBar(
+                            title = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painterResource(id = R.drawable.cherry),
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+                                        contentDescription = "Cuccina",
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .padding(4.dp)
+                                    )
+                                    Text(
+                                        text = title,
+                                        style = MaterialTheme.typography.headlineLarge.copy(
+                                            fontWeight = FontWeight.Black
+                                        )
+                                    )
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                        )
+                    }
+
+                }, bottomBar = {
+                    AnimatedVisibility(
+                        visible = showNavigation,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        BottomNavigation(navController = navController)
+                    }
+                }) {
                     if (appState.value == MainViewModel.MainState.RequireLogin) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
@@ -108,6 +140,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 LaunchedEffect(navController) {
+                    viewModel.checkUser()
                     navController.currentBackStackEntryFlow.collect { backStackEntry ->
                         title = getRouteTitle(backStackEntry.destination.route)
                     }

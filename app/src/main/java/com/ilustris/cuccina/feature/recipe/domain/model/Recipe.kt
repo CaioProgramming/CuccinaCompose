@@ -16,4 +16,12 @@ data class Recipe(
     var steps: List<Step> = emptyList(),
     var likes: List<String> = emptyList(),
     var category: String = "",
+    var calories: Int = 0,
+    var publishDate: Long = 0L,
 ) : BaseBean(id)
+
+
+data class RecipeGroup(
+    val title: String,
+    val recipes: List<Recipe>
+)

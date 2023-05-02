@@ -14,6 +14,4 @@ enum class Category(val icon: Int = R.drawable.cherry, val title: String, val de
     PROTEIN(title = "Proteínas", icon = R.drawable.meat),
     SALADS(title = "Saladas", icon = R.drawable.salad),
     UNKNOW(title = "Outros", icon = R.drawable.cherry)
-
-
 }
