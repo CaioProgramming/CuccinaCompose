@@ -42,7 +42,6 @@ fun StepSheet(savedIngredients: List<Ingredient>, newStep: (Step) -> Unit) {
 
         LazyColumn(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
         ) {
             Log.i("StepSheet", "saved instructions ->  ${instructions.toList()}")

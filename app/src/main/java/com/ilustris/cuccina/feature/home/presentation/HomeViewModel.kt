@@ -20,13 +20,11 @@ class HomeViewModel @Inject constructor(
     override val service: RecipeService
 ) : BaseViewModel<Recipe>(application) {
 
-    sealed class HomeState {
-        data class HomeListState(val recipes: List<RecipeGroup>) : HomeState()
-    }
-
     val homeList = MutableLiveData<List<RecipeGroup>>()
 
     val highlightRecipes = MutableLiveData<List<Recipe>>()
+
+    val currentCategory = MutableLiveData<Category?>(null)
 
     fun loadHome() {
         updateViewState(ViewModelBaseState.LoadingState)
@@ -50,6 +48,14 @@ class HomeViewModel @Inject constructor(
 
     fun searchRecipe(it: String) {
         TODO("Not yet implemented")
+    }
+
+    fun updateCategory(category: Category) {
+        if (category == currentCategory.value) {
+            currentCategory.postValue(null)
+        } else {
+            currentCategory.postValue(category)
+        }
     }
 
 }

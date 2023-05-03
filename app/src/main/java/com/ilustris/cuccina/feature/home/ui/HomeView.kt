@@ -10,9 +10,9 @@
 package com.ilustris.cuccina.feature.home.ui
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,8 +22,10 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,9 +35,8 @@ import com.ilustris.cuccina.feature.home.presentation.HomeViewModel
 import com.ilustris.cuccina.feature.home.ui.component.BannerCard
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
-import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
+import com.ilustris.cuccina.feature.recipe.domain.model.RecipeGroup
 import com.ilustris.cuccina.feature.recipe.ui.RecipeGroupList
-import com.ilustris.cuccina.feature.recipe.ui.component.RecipeCard
 import com.ilustris.cuccina.feature.recipe.ui.component.StateComponent
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
@@ -51,10 +52,9 @@ fun HomeView(homeViewModel: HomeViewModel?) {
     val homeList = homeViewModel?.homeList?.observeAsState()
     val highLights = homeViewModel?.highlightRecipes?.observeAsState()
     val categories = Category.values().toList().sortedBy { it.description }
-    var selectedCategory: Category? by remember {
-        mutableStateOf(null)
-    }
-    var sheetState = rememberModalBottomSheetState(
+    var selectedCategory = homeViewModel?.currentCategory?.observeAsState()
+
+    val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true,
     )
@@ -128,17 +128,16 @@ fun HomeView(homeViewModel: HomeViewModel?) {
 
             item {
 
-                LazyRow(modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)) {
+                AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
+                    LazyRow(modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp)) {
 
-                    items(categories.size) {
-                        CategoryBadge(category = categories[it], selectedCategory) { category ->
-                            Toast.makeText(
-                                context,
-                                "open category ${category.title}",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                            selectedCategory = category
+                        items(categories.size) {
+                            CategoryBadge(
+                                category = categories[it],
+                                selectedCategory?.value
+                            ) { category ->
+                                homeViewModel?.updateCategory(category)
+                            }
                         }
                     }
                 }
@@ -156,18 +155,6 @@ fun HomeView(homeViewModel: HomeViewModel?) {
 
             homeBaseState?.value?.let {
                 when (it) {
-                    is ViewModelBaseState.DataListRetrievedState -> {
-                        val recipes = it.dataList as List<Recipe>
-                        items(recipes.size) { index ->
-                            val recipe = recipes[index]
-                            RecipeCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(250.dp), recipe = recipe
-                            )
-
-                        }
-                    }
                     ViewModelBaseState.LoadCompleteState -> {
                         Log.i(javaClass.simpleName, "HomeView: Load complete")
                     }
@@ -180,11 +167,26 @@ fun HomeView(homeViewModel: HomeViewModel?) {
             }
 
             Log.i(javaClass.simpleName, "HomeView: ${homeList?.value} ")
+            Log.i(javaClass.simpleName, "HomeView: current category ${selectedCategory?.value}")
 
-            homeList?.value?.let { recipes ->
-                items(recipes.size) { index ->
-                    val group = recipes[index]
-                    RecipeGroupList(recipeGroup = group, orientation = RecyclerView.HORIZONTAL)
+            fun getHomeList(): List<RecipeGroup> {
+                return homeList?.value?.filter { it.title == selectedCategory?.value?.title }
+                    ?: emptyList()
+            }
+
+            if (selectedCategory?.value != null) {
+                getHomeList().run {
+                    items(size) { index ->
+                        val group = this@run[index]
+                        RecipeGroupList(recipeGroup = group, orientation = RecyclerView.HORIZONTAL)
+                    }
+                }
+            } else {
+                homeList?.value?.let {
+                    items(it.size) { index ->
+                        val group = it[index]
+                        RecipeGroupList(recipeGroup = group, orientation = RecyclerView.HORIZONTAL)
+                    }
                 }
             }
         }

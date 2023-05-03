@@ -25,7 +25,8 @@ enum class IngredientType(val description: String, val abreviation: String, val 
     CENTIMETERS("Centímetro(s)", "cm", Texture.UNIT),
     DECILITER("Decilitro(s)", "dl", Texture.LIQUID),
     CENTILITER("Centilitro(s)", "cl", Texture.LIQUID),
-    TASTE("A gosto", "", Texture.UNDEFINED)
+    TASTE("A gosto", "", Texture.UNDEFINED),
+    SHOT("Dose(s)", "d", Texture.UNIT)
 
 }
 

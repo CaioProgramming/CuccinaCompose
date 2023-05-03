@@ -119,7 +119,8 @@ object IngredientMapper {
         EmojiDic("🥜", listOf("amendoim", "amendoins", "peanut", "peanuts")),
         EmojiDic("🌰", listOf("castanha", "castanhas", "nut", "nuts")),
         EmojiDic("🍫", listOf("chocolate", "chocolates", "chocolate")),
-        EmojiDic("🍯", listOf("mel", "honey", "honeys", "mels"))
+        EmojiDic("🍯", listOf("mel", "honey", "honeys", "mels")),
+        EmojiDic("🧊", listOf("gelo", "ice")),
     )
 
     data class EmojiDic(val emoji: String, val ingredientNames: List<String>)

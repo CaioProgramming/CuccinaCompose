@@ -106,17 +106,19 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
     }
 
 
-    ModalBottomSheetLayout(sheetContent = {
-        if (sheetOption.value == "ingredient") {
-            IngredientSheet {
-                Log.i("NewRecipeView", "NewRecipeView: new ingredient $it")
-                newRecipeViewModel?.updateRecipeIngredients(it)
-                scope.launch {
-                    bottomSheetState.hide()
+    ModalBottomSheetLayout(
+        sheetBackgroundColor = MaterialTheme.colorScheme.background,
+        sheetContent = {
+            if (sheetOption.value == "ingredient") {
+                IngredientSheet {
+                    Log.i("NewRecipeView", "NewRecipeView: new ingredient $it")
+                    newRecipeViewModel?.updateRecipeIngredients(it)
+                    scope.launch {
+                        bottomSheetState.hide()
+                    }
                 }
-            }
-        } else {
-            StepSheet(savedIngredients = ingredients ?: listOf()) {
+            } else {
+                StepSheet(savedIngredients = ingredients ?: listOf()) {
                 Log.i("NewRecipeView", "NewRecipeView: new step $it")
                 newRecipeViewModel?.updateRecipeSteps(it)
                 scope.launch {
@@ -310,6 +312,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                                 onValueChange = {
                                     hours = it
                                 },
+                                textStyle = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onBackground),
                                 range = 0..23,
                                 dividersColor = Color.Transparent,
                                 modifier = Modifier.fillMaxWidth(0.5f)
@@ -320,7 +323,9 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                                 label = {
                                     val minuteFormatted = if (it <= 1) "minuto" else "minutos"
                                     "$it $minuteFormatted"
-                                }, modifier = Modifier.fillMaxWidth(),
+                                },
+                                textStyle = MaterialTheme.typography.bodyMedium.copy(MaterialTheme.colorScheme.onBackground),
+                                modifier = Modifier.fillMaxWidth(),
                                 onValueChange = {
                                     minutes = it
                                 }, dividersColor = Color.Transparent, range = 0..59
