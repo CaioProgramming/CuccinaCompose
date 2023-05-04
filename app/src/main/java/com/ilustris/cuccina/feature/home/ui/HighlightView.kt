@@ -177,7 +177,6 @@ fun HighlightPager(
                 .fillMaxWidth()
                 .wrapContentHeight(align = Alignment.Bottom)
         ) { page ->
-
             HighlightView(recipes[page], Modifier.pagerFadeTransition(page, pagerState))
         }
 

@@ -32,7 +32,8 @@ import androidx.navigation.compose.rememberNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
-import com.ilustris.cuccina.feature.recipe.form.presentation.ui.NEW_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
 import com.ilustris.cuccina.navigation.BottomNavigation
 import com.ilustris.cuccina.navigation.NavigationGraph
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
@@ -143,6 +144,7 @@ class MainActivity : ComponentActivity() {
                     viewModel.checkUser()
                     navController.currentBackStackEntryFlow.collect { backStackEntry ->
                         title = getRouteTitle(backStackEntry.destination.route)
+                        showNavigation = (backStackEntry.destination.route != START_RECIPE_ROUTE)
                     }
                 }
             }
@@ -155,6 +157,7 @@ fun getRouteTitle(route: String?): String {
     return when (route) {
         HOME_ROUTE -> "Cuccina"
         NEW_RECIPE_ROUTE -> "Nova receita"
+        START_RECIPE_ROUTE -> ""
         else -> "Cuccina"
     }
 }

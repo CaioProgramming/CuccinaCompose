@@ -41,7 +41,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
-val defaultRadius = 5.dp
+val defaultRadius = 10.dp
 
 @Composable
 fun CuccinaTheme(

@@ -28,25 +28,26 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.recyclerview.widget.RecyclerView
 import com.ilustris.cuccina.feature.home.presentation.HomeViewModel
 import com.ilustris.cuccina.feature.home.ui.component.BannerCard
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
+import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.model.RecipeGroup
+import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE_IMPL
 import com.ilustris.cuccina.feature.recipe.ui.RecipeGroupList
 import com.ilustris.cuccina.feature.recipe.ui.component.StateComponent
-import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import kotlinx.coroutines.launch
 
-const val HOME_ROUTE = "HOME_ROUTE"
+const val HOME_ROUTE = "home"
 
 @Composable
-fun HomeView(homeViewModel: HomeViewModel?) {
+fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
     val context = LocalContext.current
     val homeBaseState = homeViewModel?.viewModelState?.observeAsState()
     val homeList = homeViewModel?.homeList?.observeAsState()
@@ -106,6 +107,10 @@ fun HomeView(homeViewModel: HomeViewModel?) {
         )
     }
 
+    fun navigateToRecipe(recipe: Recipe) {
+        navController.navigate("${START_RECIPE_ROUTE_IMPL}${recipe.id}")
+    }
+
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -117,10 +122,11 @@ fun HomeView(homeViewModel: HomeViewModel?) {
                     scope.launch {
                         sheetState.hide()
                     }
-                }, openRecipe = {
+                }, openRecipe = { recipe ->
                     scope.launch {
                         sheetState.hide()
                     }
+                    navigateToRecipe(recipe)
                 })
             }
         }) {
@@ -169,6 +175,7 @@ fun HomeView(homeViewModel: HomeViewModel?) {
             Log.i(javaClass.simpleName, "HomeView: ${homeList?.value} ")
             Log.i(javaClass.simpleName, "HomeView: current category ${selectedCategory?.value}")
 
+
             fun getHomeList(): List<RecipeGroup> {
                 return homeList?.value?.filter { it.title == selectedCategory?.value?.title }
                     ?: emptyList()
@@ -178,14 +185,24 @@ fun HomeView(homeViewModel: HomeViewModel?) {
                 getHomeList().run {
                     items(size) { index ->
                         val group = this@run[index]
-                        RecipeGroupList(recipeGroup = group, orientation = RecyclerView.HORIZONTAL)
+                        RecipeGroupList(
+                            recipeGroup = group,
+                            orientation = RecyclerView.HORIZONTAL
+                        ) {
+                            navigateToRecipe(it)
+                        }
                     }
                 }
             } else {
                 homeList?.value?.let {
                     items(it.size) { index ->
                         val group = it[index]
-                        RecipeGroupList(recipeGroup = group, orientation = RecyclerView.HORIZONTAL)
+                        RecipeGroupList(
+                            recipeGroup = group,
+                            orientation = RecyclerView.HORIZONTAL
+                        ) { recipe ->
+                            navigateToRecipe(recipe)
+                        }
                     }
                 }
             }
@@ -193,12 +210,4 @@ fun HomeView(homeViewModel: HomeViewModel?) {
     }
 
 
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun homePreview() {
-    CuccinaTheme {
-        HomeView(null)
-    }
 }

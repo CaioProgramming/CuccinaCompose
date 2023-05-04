@@ -5,6 +5,7 @@ package com.ilustris.cuccina.feature.recipe.ui.component
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,7 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.skydoves.landscapist.glide.GlideImageState
 
 @Composable
-fun RecipeCard(modifier: Modifier, recipe: Recipe) {
+fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Unit) {
 
     var visibility by remember {
         mutableStateOf(true)
@@ -38,7 +39,11 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe) {
         enter = scaleIn() + fadeIn(),
         exit = fadeOut() + scaleOut()
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier
+            .padding(8.dp)
+            .clickable {
+                onClickRecipe(recipe)
+            }) {
 
             GlideImage(
                 imageModel = { recipe.photo },
@@ -108,7 +113,7 @@ fun recipePreview() {
                 author = "Silent",
                 ingredients = emptyList(),
                 category = Category.CANDY.name
-            )
+            ), onClickRecipe = { }
         )
     }
 }

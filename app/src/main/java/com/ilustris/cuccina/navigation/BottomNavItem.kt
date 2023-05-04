@@ -22,18 +22,29 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
 import com.ilustris.cuccina.feature.home.ui.HomeView
-import com.ilustris.cuccina.feature.recipe.form.presentation.ui.NEW_RECIPE_ROUTE
-import com.ilustris.cuccina.feature.recipe.form.presentation.ui.NewRecipeView
+import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.form.ui.NewRecipeView
+import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.start.ui.StartRecipeView
+import com.ilustris.cuccina.ui.theme.CuccinaTheme
 
-enum class BottomNavItem(val title: String, var icon: Int = R.drawable.cherry, val route: String) {
+enum class BottomNavItem(
+    val title: String,
+    var icon: Int = R.drawable.cherry,
+    val route: String,
+    val showOnNavigation: Boolean = true
+) {
     HOME(title = "Home", route = HOME_ROUTE, icon = R.drawable.round_home_24),
     NEW_RECIPE(title = "Publicar", route = NEW_RECIPE_ROUTE, icon = R.drawable.cook),
+    START_RECIPE(title = "Fazer Receita", route = START_RECIPE_ROUTE, showOnNavigation = false),
     PROFILE(title = "Eu", route = "PROFILE_ROUTE")
 
 }
@@ -49,11 +60,25 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
         )
     ) {
         composable(BottomNavItem.HOME.route) {
-            HomeView(hiltViewModel())
+            CuccinaTheme {
+                HomeView(hiltViewModel(), navController)
+            }
         }
 
         composable(BottomNavItem.NEW_RECIPE.route) {
-            NewRecipeView(hiltViewModel())
+            CuccinaTheme {
+                NewRecipeView(hiltViewModel())
+            }
+        }
+
+        composable(
+            BottomNavItem.START_RECIPE.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.StringType })
+        ) {
+            CuccinaTheme {
+                val recipeId = it.arguments?.getString("recipeId")
+                StartRecipeView(recipeId, hiltViewModel())
+            }
         }
     }
 }
@@ -64,7 +89,7 @@ fun BottomNavigation(navController: NavController) {
         backgroundColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
-        val routes = BottomNavItem.values()
+        val routes = BottomNavItem.values().filter { it.showOnNavigation }
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination
         routes.forEach { item ->

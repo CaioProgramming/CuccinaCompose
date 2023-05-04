@@ -2,7 +2,7 @@
     ExperimentalMaterialApi::class
 )
 
-package com.ilustris.cuccina.feature.recipe.form.presentation.ui
+package com.ilustris.cuccina.feature.recipe.form.ui
 
 import android.net.Uri
 import android.util.Log
@@ -40,6 +40,7 @@ import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
+import com.ilustris.cuccina.feature.recipe.domain.ui.CaloriesComponent
 import com.ilustris.cuccina.feature.recipe.form.presentation.viewmodel.NewRecipeViewModel
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.IngredientItem
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.IngredientSheet
@@ -52,7 +53,7 @@ import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 
-const val NEW_RECIPE_ROUTE = "NEW_RECIPE_ROUTE"
+const val NEW_RECIPE_ROUTE = "new_recipe"
 
 @Composable
 fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {

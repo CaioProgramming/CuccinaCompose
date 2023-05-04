@@ -1,5 +1,6 @@
 package com.ilustris.cuccina.feature.home.ui.component
 
+import ai.atick.material.MaterialColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,13 +48,13 @@ fun BannerCard(recipe: Recipe, onClickBanner: (Recipe) -> Unit) {
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
                 colorFilter = ColorFilter.tint(
-                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
                     blendMode = BlendMode.SrcAtop
                 )
             ), failure = {
                 Text(
                     text = "Foto nao encontrada",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialColor.White),
                     modifier = Modifier.padding(8.dp)
                 )
             },
