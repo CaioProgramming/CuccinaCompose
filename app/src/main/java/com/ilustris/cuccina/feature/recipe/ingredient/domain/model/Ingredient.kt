@@ -1,6 +1,10 @@
 package com.ilustris.cuccina.feature.recipe.ingredient.domain.model
 
-data class Ingredient(val name: String, val quantity: Int, val type: IngredientType)
+data class Ingredient(
+    val name: String = "",
+    val quantity: Int = 0,
+    val type: IngredientType = IngredientType.POUNDS
+)
 
 enum class IngredientType(val description: String, val abreviation: String, val texture: Texture) {
     POUNDS("Grama(s)", "g", Texture.POUND),
@@ -21,7 +25,8 @@ enum class IngredientType(val description: String, val abreviation: String, val 
     CENTIMETERS("Centímetro(s)", "cm", Texture.UNIT),
     DECILITER("Decilitro(s)", "dl", Texture.LIQUID),
     CENTILITER("Centilitro(s)", "cl", Texture.LIQUID),
-    TASTE("A gosto", "", Texture.UNDEFINED)
+    TASTE("A gosto", "", Texture.UNDEFINED),
+    SHOT("Dose(s)", "d", Texture.UNIT)
 
 }
 

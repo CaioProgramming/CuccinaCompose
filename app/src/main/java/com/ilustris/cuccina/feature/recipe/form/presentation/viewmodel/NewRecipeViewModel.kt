@@ -11,9 +11,11 @@ import com.ilustris.cuccina.feature.recipe.step.domain.model.Step
 import com.silent.ilustriscore.core.model.BaseViewModel
 import com.silent.ilustriscore.core.model.DataException
 import com.silent.ilustriscore.core.model.ViewModelBaseState
+import com.silent.ilustriscore.core.utilities.delayedFunction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,23 +27,37 @@ class NewRecipeViewModel @Inject constructor(
     val recipe = MutableLiveData(Recipe())
 
 
-    fun saveRecipe() {
+    fun saveRecipe(time: Long) {
         updateViewState(ViewModelBaseState.LoadingState)
         viewModelScope.launch(Dispatchers.IO) {
-            updateViewState(ViewModelBaseState.LoadingState)
             recipe.value?.let {
                 val saveTask =
-                    service.addData(it.copy(author = service.currentUser()?.displayName ?: ""))
+                    service.addData(
+                        it.copy(
+                            author = service.currentUser()?.displayName ?: "",
+                            time = time,
+                            publishDate = Calendar.getInstance().timeInMillis
+                        )
+                    )
                 if (saveTask.isSuccess) {
                     updateViewState(ViewModelBaseState.DataSavedState(it))
                 } else {
                     updateViewState(ViewModelBaseState.ErrorState(saveTask.error.errorException))
+                }
+                clearRecipe()
+                delayedFunction(2000) {
+                    updateViewState(ViewModelBaseState.LoadCompleteState)
+
                 }
             } ?: kotlin.run {
                 updateViewState(ViewModelBaseState.ErrorState(DataException.UNKNOWN))
             }
         }
 
+    }
+
+    fun clearRecipe() {
+        recipe.postValue(Recipe())
     }
 
     fun updateRecipeName(name: String) {
@@ -102,5 +118,13 @@ class NewRecipeViewModel @Inject constructor(
 
     fun updateRecipeCategory(category: String) {
         recipe.postValue(recipe.value?.copy(category = category))
+    }
+
+    fun updateCalories(calories: Int) {
+        recipe.postValue(recipe.value?.copy(calories = calories))
+    }
+
+    fun updatePortions(portions: Int) {
+        recipe.postValue(recipe.value?.copy(portions = portions))
     }
 }

@@ -52,12 +52,12 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
         val step = when (texture) {
             Texture.LIQUID, Texture.POUND -> 10
             Texture.UNIT -> 1
-            Texture.UNDEFINED -> 0
+            else -> 0
         }
         val limit = when (texture) {
             Texture.LIQUID, Texture.POUND -> 1000
             Texture.UNIT -> 100
-            Texture.UNDEFINED -> 0
+            else -> 0
         }
         for (i in 0..limit step step) {
             rangeList.add(i)
@@ -77,7 +77,6 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
 
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp, vertical = 32.dp)
     ) {
 

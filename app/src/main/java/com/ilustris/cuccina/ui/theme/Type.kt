@@ -13,26 +13,30 @@ val mavenPro = FontFamily(Font(R.font.maven_pro_variable_font_wght))
 val dosis = FontFamily(Font(R.font.dosis_variable_font_wght))
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = dosis,
-        fontWeight = FontWeight.W800,
-        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = dosis,
-        fontWeight = FontWeight.W700,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+    bodySmall = TextStyle(
+        fontWeight = FontWeight.Normal,
         fontSize = 14.sp
     ),
+    headlineSmall = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp
+    ),
     headlineMedium = TextStyle(
-        fontFamily = mavenPro,
-        fontWeight = FontWeight.W700,
-        fontSize = 22.sp
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = mavenPro,
         fontWeight = FontWeight.Black,
-        fontSize = 28.sp
+        fontSize = 32.sp
     )
     /* Other default text styles to override
     titleLarge = TextStyle(
