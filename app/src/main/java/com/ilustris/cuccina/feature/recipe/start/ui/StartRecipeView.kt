@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.start.presentation.StartRecipeViewModel
@@ -39,7 +41,11 @@ const val START_RECIPE_ROUTE_IMPL = "start_recipe/"
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeViewModel? = null) {
+fun StartRecipeView(
+    recipeId: String? = null,
+    startRecipeViewModel: StartRecipeViewModel? = null,
+    navController: NavHostController
+) {
 
     val state = startRecipeViewModel?.viewModelState?.observeAsState()
     val recipe = remember {
@@ -64,15 +70,17 @@ fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeV
 
 
         Log.i("StartView", "StartRecipeView: building view for -> $it")
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val (title, pager, indicator, nextButton, progressBar) = createRefs()
+        ConstraintLayout(modifier = Modifier
+            .animateContentSize(tween(1000))
+            .fillMaxSize()) {
+            val (title, pager, indicator, nextButton, progressBar, backButton) = createRefs()
             Text(
                 text = it.name,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .padding(16.dp)
                     .constrainAs(title) {
-                        top.linkTo(parent.top)
+                        top.linkTo(backButton.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         width = Dimension.fillToConstraints
@@ -98,6 +106,7 @@ fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeV
                 }
                 HorizontalPager(
                     pageCount = pages.size,
+                    userScrollEnabled = false,
                     state = pagerState,
                     modifier = Modifier.constrainAs(pager) {
                         top.linkTo(title.bottom)
@@ -110,6 +119,25 @@ fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeV
                     getPageView(page = pages[index])
                 }
 
+                IconButton(modifier = Modifier.constrainAs(backButton) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }, onClick = {
+                    if (pagerState.currentPage > 0) {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        }
+                    } else {
+                        navController.popBackStack()
+                    }
+                }) {
+                    Icon(
+                        Icons.Default.KeyboardArrowLeft,
+                        contentDescription = "Voltar",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
@@ -119,7 +147,7 @@ fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeV
                         }
                         .padding(16.dp)
                         .wrapContentHeight()
-                        .fillMaxWidth(0.2f)
+                        .fillMaxWidth(0.5f)
                 ) {
                     repeat(pages.size) { index ->
                         val isCurrentPage = pagerState.currentPage == index
@@ -132,7 +160,7 @@ fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeV
                         Box(
                             modifier = Modifier
                                 .padding(1.dp)
-                                .animateContentSize()
+                                .animateContentSize(tween(1000))
                                 .clip(RoundedCornerShape(5.dp))
                                 .background(color)
                                 .weight(weight)
@@ -175,7 +203,7 @@ fun StartRecipeView(recipeId: String? = null, startRecipeViewModel: StartRecipeV
 
 
                 CircularProgressIndicator(
-                    progress = progress,
+                    progress = progressAnimation,
                     color = MaterialTheme.colorScheme.primary,
                     strokeWidth = 2.dp,
                     strokeCap = StrokeCap.Round,

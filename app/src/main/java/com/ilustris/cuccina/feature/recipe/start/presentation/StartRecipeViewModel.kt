@@ -22,19 +22,20 @@ class StartRecipeViewModel @Inject constructor(
 
     fun getPages(recipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         val pageList = ArrayList<Page>()
-        val plural = if (recipe.ingredients.size > 1) "s" else ""
+        val ingredientPlural = if (recipe.ingredients.size > 1) "s" else ""
+        val stepPlural = if (recipe.steps.size > 1) "s" else ""
         pageList.add(Page.RecipePage(recipe.name, recipe.description, recipe))
         pageList.add(
             Page.IngredientsPage(
                 "Ingredientes",
-                "Reúna os ingredientes, você vai precisar de ${recipe.ingredients.size}.Quando estiver pronto só precisa clicar em continuar}",
+                "Reúna os ingredientes, você vai precisar de ${recipe.ingredients.size} itens.\nQuando estiver pronto só precisa clicar em continuar}",
                 recipe.ingredients
             )
         )
         pageList.add(
             Page.StepsPage(
                 "Modo de Preparo",
-                "Essa receita tem ${recipe.steps.size} etapa$plural, vamos começar?",
+                "Essa receita tem ${recipe.steps.size} etapa$stepPlural, vamos começar?",
                 recipe.steps
             )
         )

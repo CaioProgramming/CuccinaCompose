@@ -77,7 +77,7 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
         ) {
             CuccinaTheme {
                 val recipeId = it.arguments?.getString("recipeId")
-                StartRecipeView(recipeId, hiltViewModel())
+                StartRecipeView(recipeId, hiltViewModel(), navController)
             }
         }
     }

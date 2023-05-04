@@ -75,7 +75,7 @@ fun BannerCard(recipe: Recipe, onClickBanner: (Recipe) -> Unit) {
             text = "Vem conferir nossas melhores receitas",
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialColor.White
             ),
             modifier = Modifier
                 .constrainAs(text) {
