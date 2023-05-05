@@ -56,11 +56,15 @@ class HomeViewModel @Inject constructor(
 
     private fun getHighlights(recipes: List<Recipe>) {
         val pages = mutableListOf<Page>()
+        val emojisBackgrounds = ArrayList<String>()
+        repeat(3) {
+            emojisBackgrounds.add(IngredientMapper.emojiList().random())
+        }
         pages.add(
             Page.AnimatedTextPage(
-                "Da uma olhada nas novidades",
+                "Tem novidade na cozinha!",
                 "Novas receitas foram adicionadas ao app, confira!",
-                IngredientMapper.emojiList().take(3),
+                emojisBackgrounds,
                 backColor = MaterialColor.OrangeA100,
                 textColor = MaterialColor.White
             )

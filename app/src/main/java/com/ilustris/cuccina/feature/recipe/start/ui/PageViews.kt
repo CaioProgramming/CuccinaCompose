@@ -109,7 +109,8 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialColor.Black.copy(alpha = 0.4f))
+                .padding(16.dp)
+                .background(MaterialColor.Black.copy(alpha = 0.3f))
         ) {
 
             Text(
