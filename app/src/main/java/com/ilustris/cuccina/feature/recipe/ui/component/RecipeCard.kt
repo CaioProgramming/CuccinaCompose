@@ -4,6 +4,7 @@ package com.ilustris.cuccina.feature.recipe.ui.component
 
 import android.util.Log
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.request.RequestOptions
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
@@ -43,10 +45,15 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Un
             .padding(8.dp)
             .clickable {
                 onClickRecipe(recipe)
-            }) {
+            }
+            .clip(RoundedCornerShape(defaultRadius))
+        ) {
 
             GlideImage(
                 imageModel = { recipe.photo },
+                requestOptions = {
+                    RequestOptions().useAnimationPool(true)
+                },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center,
@@ -70,10 +77,14 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Un
                 },
                 previewPlaceholder = R.drawable.ic_cherries,
                 modifier = modifier
-                    .clip(RoundedCornerShape(defaultRadius))
+                    .animateContentSize()
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        RoundedCornerShape(defaultRadius)
+                    )
                     .border(
                         1.dp,
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
                         RoundedCornerShape(defaultRadius)
                     )
             )

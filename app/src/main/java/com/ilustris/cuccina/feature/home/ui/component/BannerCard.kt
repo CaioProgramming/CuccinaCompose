@@ -22,14 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.ilustris.cuccina.R
-import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun BannerCard(recipe: Recipe, onClickBanner: (Recipe) -> Unit) {
+fun BannerCard(backgroundImage: String, onClickBanner: () -> Unit) {
 
     ConstraintLayout(
         modifier = Modifier
@@ -37,13 +36,13 @@ fun BannerCard(recipe: Recipe, onClickBanner: (Recipe) -> Unit) {
             .padding(12.dp)
             .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(defaultRadius))
             .clickable {
-                onClickBanner(recipe)
+                onClickBanner()
             }
     ) {
         val (background, text) = createRefs()
 
         GlideImage(
-            imageModel = { recipe.photo },
+            imageModel = { backgroundImage },
             imageOptions = ImageOptions(
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
@@ -91,6 +90,6 @@ fun BannerCard(recipe: Recipe, onClickBanner: (Recipe) -> Unit) {
 @Composable
 fun BannerPreview() {
     CuccinaTheme {
-        BannerCard(Recipe(), {})
+        BannerCard("", {})
     }
 }

@@ -84,37 +84,7 @@ class MainActivity : ComponentActivity() {
 
                 showNavigation = showAppBar(appState.value)
 
-                Scaffold(topBar = {
-
-                    AnimatedVisibility(
-                        visible = showNavigation,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        TopAppBar(
-                            title = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Image(
-                                        painterResource(id = R.drawable.cherry),
-                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-                                        contentDescription = "Cuccina",
-                                        modifier = Modifier
-                                            .size(32.dp)
-                                            .padding(4.dp)
-                                    )
-                                    Text(
-                                        text = title,
-                                        style = MaterialTheme.typography.headlineLarge.copy(
-                                            fontWeight = FontWeight.Black
-                                        )
-                                    )
-                                }
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-                        )
-                    }
-
-                }, bottomBar = {
+                Scaffold(bottomBar = {
                     AnimatedVisibility(
                         visible = showNavigation,
                         enter = fadeIn(),

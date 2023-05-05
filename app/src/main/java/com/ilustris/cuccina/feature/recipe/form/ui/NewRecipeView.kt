@@ -1,5 +1,5 @@
 @file:OptIn(
-    ExperimentalMaterialApi::class
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class
 )
 
 package com.ilustris.cuccina.feature.recipe.form.ui
@@ -11,7 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -28,9 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -120,14 +125,15 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                 }
             } else {
                 StepSheet(savedIngredients = ingredients ?: listOf()) {
-                Log.i("NewRecipeView", "NewRecipeView: new step $it")
-                newRecipeViewModel?.updateRecipeSteps(it)
-                scope.launch {
-                    bottomSheetState.hide()
+                    Log.i("NewRecipeView", "NewRecipeView: new step $it")
+                    newRecipeViewModel?.updateRecipeSteps(it)
+                    scope.launch {
+                        bottomSheetState.hide()
+                    }
                 }
             }
-        }
-    }, sheetState = bottomSheetState) {
+        }, sheetState = bottomSheetState
+    ) {
 
         val categories = Category.values().toList().sortedBy { it.description }
 
@@ -148,10 +154,31 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
                 StateComponent(R.raw.cakerun, "Receita salva com sucesso!")
             }
             else -> {
-                LazyColumn(
-                    Modifier
-                        .fillMaxWidth()
-                ) {
+                LazyColumn {
+
+                    item {
+                        TopAppBar(
+                            title = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painterResource(id = R.drawable.cherry),
+                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(32.dp)
+                                            .padding(4.dp)
+                                    )
+                                    Text(
+                                        text = "Nova receita",
+                                        style = MaterialTheme.typography.headlineLarge.copy(
+                                            fontWeight = FontWeight.Black
+                                        )
+                                    )
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                        )
+                    }
 
                     item {
                         GlideImage(

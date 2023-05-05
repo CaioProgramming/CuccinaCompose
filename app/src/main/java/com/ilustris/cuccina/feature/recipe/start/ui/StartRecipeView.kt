@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalPagerApi::class)
+@file:OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
 
 package com.ilustris.cuccina.feature.recipe.start.ui
 
 import android.util.Log
-import androidx.compose.animation.animateContentSize
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,21 +59,18 @@ fun StartRecipeView(
         animationSpec = tween(1000)
     )
 
-    Log.i("StartRecipeView", "StartRecipeView: current state -> ${state?.value}")
-    Log.i("StartRecipeView", "StartRecipeView: recipe state -> ${recipe.value}")
+
 
     recipe.value?.let {
         if (pages?.value == null || pages.value?.isEmpty() == true) {
-            Log.i("StarRecipeView", "StartRecipeView: building pages for -> $it")
             startRecipeViewModel?.getPages(it)
         }
 
-
-
-        Log.i("StartView", "StartRecipeView: building view for -> $it")
-        ConstraintLayout(modifier = Modifier
-            .animateContentSize(tween(1000))
-            .fillMaxSize()) {
+        ConstraintLayout(
+            modifier = Modifier
+                .animateContentSize(tween(1000))
+                .fillMaxSize()
+        ) {
             val (title, pager, indicator, nextButton, progressBar, backButton) = createRefs()
             Text(
                 text = it.name,
@@ -99,11 +97,42 @@ fun StartRecipeView(
                 val pagerState = rememberPagerState()
                 val scope = rememberCoroutineScope()
 
+                val isComplete = pagerState.currentPage == pages.lastIndex
+
+                val iconColor =
+                    if (isComplete) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.background
+                val backColor =
+                    if (isComplete) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+                val icon = if (isComplete) Icons.Default.Check else Icons.Default.KeyboardArrowRight
+
+                val iconColorAnimation by animateColorAsState(
+                    targetValue = iconColor,
+                    animationSpec = tween(1000)
+                )
+                val backColorAnimation by animateColorAsState(
+                    targetValue = backColor,
+                    animationSpec = tween(1000)
+                )
+
+
+
                 LaunchedEffect(pagerState) {
                     snapshotFlow { pagerState.currentPage }.distinctUntilChanged().collect { page ->
                         progress = getPageProgress(page, pages.lastIndex)
                     }
                 }
+
+                BackHandler {
+                    if (pagerState.currentPage > 0) {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        }
+                    } else {
+                        navController.popBackStack()
+                    }
+                }
+
+
                 HorizontalPager(
                     pageCount = pages.size,
                     userScrollEnabled = false,
@@ -116,13 +145,17 @@ fun StartRecipeView(
                         height = Dimension.fillToConstraints
                         width = Dimension.fillToConstraints
                     }) { index ->
-                    getPageView(page = pages[index])
+                    getPageView(page = pages[index]) {
+
+                    }
                 }
 
-                IconButton(modifier = Modifier.constrainAs(backButton) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                }, onClick = {
+                IconButton(modifier = Modifier
+                    .constrainAs(backButton) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    }
+                    .animateContentSize(), onClick = {
                     if (pagerState.currentPage > 0) {
                         scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage - 1)
@@ -169,6 +202,7 @@ fun StartRecipeView(
                     }
                 }
 
+
                 IconButton(modifier = Modifier
                     .constrainAs(nextButton) {
                         top.linkTo(progressBar.top, 4.dp)
@@ -180,7 +214,7 @@ fun StartRecipeView(
 
                     }
                     .padding(8.dp)
-                    .background(MaterialTheme.colorScheme.onBackground, CircleShape),
+                    .background(backColorAnimation, CircleShape),
                     onClick = {
                         scope.launch {
                             if (pagerState.currentPage != pages.lastIndex) {
@@ -188,17 +222,19 @@ fun StartRecipeView(
                             }
                         }
                     }) {
-                    val icon = if (pagerState.currentPage == pages.lastIndex) {
-                        Icons.Default.Check
-                    } else {
-                        Icons.Default.KeyboardArrowRight
+                    AnimatedContent(targetState = icon, transitionSpec = {
+                        EnterTransition.None with ExitTransition.None
+                    }) { target ->
+                        Icon(
+                            target,
+                            modifier = Modifier.animateEnterExit(
+                                enter = scaleIn(),
+                                exit = scaleOut()
+                            ),
+                            contentDescription = if (!isComplete) "Voltar" else "Finalizar Receita",
+                            tint = iconColorAnimation
+                        )
                     }
-                    Icon(
-                        icon,
-                        modifier = Modifier.animateContentSize(),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.background
-                    )
                 }
 
 

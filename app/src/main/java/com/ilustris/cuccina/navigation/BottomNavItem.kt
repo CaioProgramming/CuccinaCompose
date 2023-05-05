@@ -54,10 +54,7 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
     NavHost(
         navController = navController,
         startDestination = HOME_ROUTE,
-        modifier = Modifier.padding(
-            top = paddingValues.calculateTopPadding(),
-            bottom = paddingValues.calculateBottomPadding()
-        )
+        modifier = Modifier.padding(bottom = 50.dp)
     ) {
         composable(BottomNavItem.HOME.route) {
             CuccinaTheme {

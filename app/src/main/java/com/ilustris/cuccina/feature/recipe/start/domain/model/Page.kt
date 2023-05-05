@@ -11,7 +11,27 @@ sealed class Page(
     var backColor: Color? = null,
     var textColor: Color? = null
 ) {
-    class SimplePage(title: String, description: String) : Page(title, description)
+    class SimplePage(
+        title: String,
+        description: String,
+        backColor: Color? = null,
+        textColor: Color? = null
+    ) :
+        Page(title, description, backColor, textColor)
+
+    class HighlightPage(
+        title: String,
+        description: String,
+        val backgroundImage: String,
+        val recipeId: String
+    ) : Page(title, description)
+
+    class AnimatedTextPage(
+        title: String, description: String, val texts: List<String>,
+        backColor: Color? = null,
+        textColor: Color? = null
+    ) : Page(title, description, backColor, textColor)
+
     class RecipePage(title: String, description: String, val recipe: Recipe) :
         Page(title, description)
 

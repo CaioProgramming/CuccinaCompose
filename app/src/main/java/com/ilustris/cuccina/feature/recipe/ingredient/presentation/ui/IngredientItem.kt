@@ -139,7 +139,13 @@ fun HorizontalIngredientItem(ingredient: Ingredient, showName: Boolean = true) {
             style = MaterialTheme.typography.bodyLarge
         )
 
-        val quantityFormatted = "${ingredient.quantity} ${ingredient.type.description}"
+        val quantityText =
+            if (ingredient.type == IngredientType.TASTE) "" else ingredient.quantity.toString()
+        val formattedDescription =
+            if (ingredient.quantity > 1) ingredient.type.description.replace("(", "")
+                .replace(")", "") else ingredient.type.description.replace("(s)", "")
+                .replace("(es)", "")
+        val quantityFormatted = "$quantityText $formattedDescription"
         Text(
             text = quantityFormatted,
             modifier = Modifier

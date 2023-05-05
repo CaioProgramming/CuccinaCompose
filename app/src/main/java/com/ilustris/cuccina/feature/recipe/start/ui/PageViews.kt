@@ -1,19 +1,24 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.ilustris.cuccina.feature.recipe.start.ui
 
+import ai.atick.material.MaterialColor
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
@@ -22,10 +27,14 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.Ingredient
+import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientMapper
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientType
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.HorizontalIngredientItem
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.IngredientItem
@@ -41,18 +50,176 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun SimplePageView(page: Page.SimplePage) {
 
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+    Column(
+        modifier = Modifier
+            .background(page.backColor ?: MaterialTheme.colorScheme.background)
+            .fillMaxSize(), verticalArrangement = Arrangement.Center
+    ) {
+        val textColor = page.textColor ?: MaterialTheme.colorScheme.onBackground
         Text(
             text = page.title,
             modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center)
+            style = MaterialTheme
+                .typography
+                .headlineLarge
+                .copy(textAlign = TextAlign.Center, color = textColor)
         )
         Text(
             text = page.description,
             modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+            style = MaterialTheme
+                .typography
+                .labelMedium
+                .copy(textAlign = TextAlign.Center, color = textColor)
         )
     }
+}
+
+@Composable
+fun AnimatedTextPage(page: Page.AnimatedTextPage) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(page.backColor ?: MaterialTheme.colorScheme.background)
+    ) {
+        var texts = page.texts.toString().replace("[", "").replace("]", "").replace(",", "")
+        val textColor = page.textColor ?: MaterialTheme.colorScheme.onBackground
+
+        repeat(5) {
+            texts += texts
+        }
+
+        Text(
+            texts,
+            letterSpacing = 3.sp,
+            lineHeight = 50.sp,
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier
+                .graphicsLayer {
+                    val scale = 2f
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .fillMaxSize()
+        )
+
+
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialColor.Black.copy(alpha = 0.4f))
+        ) {
+
+            Text(
+                text = page.title,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme
+                    .typography
+                    .headlineLarge
+                    .copy(
+                        textAlign = TextAlign.Center,
+                        color = textColor,
+                        fontWeight = FontWeight.Bold
+                    )
+            )
+            Text(
+                text = page.description,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme
+                    .typography
+                    .labelMedium
+                    .copy(textAlign = TextAlign.Center, color = textColor)
+            )
+
+        }
+
+
+    }
+}
+
+@Composable
+fun HighLightPage(page: Page.HighlightPage, openRecipe: (String) -> Unit) {
+
+    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        val (background, info, button) = createRefs()
+
+        GlideImage(
+            imageModel = { page.backgroundImage },
+            imageOptions = ImageOptions(
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center,
+                colorFilter = ColorFilter.tint(
+                    MaterialColor.Black.copy(alpha = 0.3f),
+                    BlendMode.SrcAtop
+                ),
+            ), failure = {
+                Text(
+                    text = "Foto nao encontrada",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(8.dp)
+                )
+            },
+            previewPlaceholder = R.drawable.ic_cherries,
+            modifier = Modifier
+                .constrainAs(background) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .fillMaxSize()
+        )
+
+        Column(modifier = Modifier
+            .constrainAs(info) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+                height = Dimension.fillToConstraints
+            }
+            .fillMaxSize(), verticalArrangement = Arrangement.Center) {
+            Text(
+                text = page.title,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    textAlign = TextAlign.Center,
+                    color = MaterialColor.White
+                )
+            )
+            Text(
+                text = page.description,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    textAlign = TextAlign.Center,
+                    color = MaterialColor.White
+                )
+            )
+        }
+
+        Button(shape = RoundedCornerShape(defaultRadius),
+            elevation = ButtonDefaults.buttonElevation(0.dp),
+            contentPadding = PaddingValues(16.dp),
+            onClick = {
+                openRecipe(page.recipeId)
+            },
+            modifier = Modifier
+                .constrainAs(button) {
+                    bottom.linkTo(parent.bottom, 10.dp)
+                    start.linkTo(parent.start, 10.dp)
+                    end.linkTo(parent.end, 10.dp)
+                }
+                .padding(16.dp)
+                .fillMaxWidth()) {
+            Text(text = "Ver Receita", fontWeight = FontWeight.Bold)
+        }
+
+
+    }
+
 }
 
 @Composable
@@ -224,7 +391,7 @@ fun RecipePageView(page: Page.RecipePage) {
         item {
             Text(
                 text = recipe.description,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -311,7 +478,7 @@ fun StepsPageView(page: Page.StepsPage) {
             Text(
                 text = page.description,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Center)
             )
         }
 
@@ -332,13 +499,15 @@ fun IngredientsPageView(page: Page.IngredientsPage) {
         item {
             Text(
                 text = page.title,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
                 style = MaterialTheme.typography.headlineLarge.copy(textAlign = TextAlign.Center)
             )
             Text(
                 text = page.description,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+                style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Center)
             )
         }
 
@@ -360,8 +529,10 @@ fun StepPageView(page: Page.StepPage) {
             )
             Text(
                 text = page.description,
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                style = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Center)
             )
         }
 
@@ -383,40 +554,46 @@ fun StepPageView(page: Page.StepPage) {
 @Composable
 fun PagePreview() {
     CuccinaTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            SimplePageView(
-                Page.SimplePage(
-                    "Vamos cozinhar?",
-                    "Prepare sua cozinha e vamos começar!"
-                )
+        val pages = listOf(
+            Page.SimplePage("Vamos cozinhar?", "Prepare sua cozinha e vamos começar!"),
+            Page.IngredientsPage(
+                "Ingredientes",
+                "estes são os ingredientes ncessários para sua receita ficar perfeita",
+                listOf(Ingredient("Contra filé", 500, type = IngredientType.POUNDS))
+            ),
+            Page.StepsPage(
+                "Passo a passo?", "Estas são as etapas para fazer sua receita",
+                listOf(Step("Passo 1", ArrayList(listOf("Instrução 1", "Instrução 2"))))
+            ),
+            Page.StepPage(
+                "Passo 1",
+                "Estas são as etapas para fazer sua receita",
+                Step("Passo 1", ArrayList(listOf("Instrução 1", "Instrução 2")))
+            ),
+            Page.AnimatedTextPage(
+                "Vamos cozinhar?",
+                description = "Prepare sua cozinha e vamos começar!",
+                IngredientMapper.emojiList().take(3)
             )
-            StepsPageView(
-                Page.StepsPage(
-                    "Passo a passo?", "Estas são as etapas para fazer sua receita",
-                    listOf(Step("Passo 1", ArrayList(listOf("Instrução 1", "Instrução 2"))))
-                )
-            )
-
-            IngredientsPageView(
-                page = Page.IngredientsPage(
-                    "Ingredientes",
-                    "estes são os ingredientes ncessários para sua receita ficar perfeita",
-                    listOf(Ingredient("Contra filé", 500, type = IngredientType.POUNDS))
-                )
-            )
+        )
+        getPageView(pages.last()) {
 
         }
-
     }
+
 }
 
 @Composable
-fun getPageView(page: Page) {
+fun getPageView(page: Page, openRecipe: (String) -> Unit) {
     return when (page) {
         is Page.SimplePage -> SimplePageView(page)
         is Page.StepsPage -> StepsPageView(page)
         is Page.IngredientsPage -> IngredientsPageView(page)
         is Page.StepPage -> StepPageView(page)
         is Page.RecipePage -> RecipePageView(page)
+        is Page.HighlightPage -> HighLightPage(page = page, openRecipe = openRecipe)
+        is Page.AnimatedTextPage -> AnimatedTextPage(page = page)
     }
 }
+
+
