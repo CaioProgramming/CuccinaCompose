@@ -6,6 +6,7 @@ import ai.atick.material.MaterialColor
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -15,10 +16,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
@@ -100,6 +101,7 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
                     scaleX = scale
                     scaleY = scale
                 }
+                .blur(2.dp, 2.dp)
                 .fillMaxSize()
         )
 
@@ -110,7 +112,6 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .background(MaterialColor.Black.copy(alpha = 0.3f))
         ) {
 
             Text(
@@ -122,7 +123,12 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
                     .copy(
                         textAlign = TextAlign.Center,
                         color = textColor,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        shadow = Shadow(
+                            color = MaterialColor.Black,
+                            offset = Offset(1f, 1f),
+                            blurRadius = 1f
+                        )
                     )
             )
             Text(
@@ -130,8 +136,16 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme
                     .typography
-                    .labelMedium
-                    .copy(textAlign = TextAlign.Center, color = textColor)
+                    .bodyMedium
+                    .copy(
+                        textAlign = TextAlign.Center,
+                        shadow = Shadow(
+                            color = MaterialColor.Black,
+                            offset = Offset(1f, 1f),
+                            blurRadius = 1f
+                        ),
+                        color = textColor
+                    )
             )
 
         }
@@ -583,6 +597,75 @@ fun PagePreview() {
     }
 
 }
+
+@Composable
+fun PageIndicators(
+    count: Int,
+    currentPage: Int,
+    modifier: Modifier,
+    enableAutoSwipe: Boolean = false,
+    onFinishPageLoad: (Int) -> Unit,
+    onSelectIndicator: (Int) -> Unit
+) {
+
+
+    fun isCurrentPage(index: Int) = currentPage == index
+
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        repeat(count) { index ->
+
+            val delay = if (!isCurrentPage(index)) 1000 else 10000
+            var progressTarget by remember {
+                mutableStateOf(0f)
+            }
+
+            val animateProgress by animateFloatAsState(
+                targetValue = progressTarget,
+                animationSpec = tween(
+                    durationMillis = delay,
+                    delayMillis = 500,
+                    easing = LinearOutSlowInEasing
+                )
+            )
+
+            val weight = 1f / count
+
+            progressTarget = if (isCurrentPage(index)) {
+                1f
+            } else {
+                0f
+            }
+
+            LinearProgressIndicator(
+                trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.secondary,
+                strokeCap = StrokeCap.Round,
+                progress = animateProgress,
+                modifier = Modifier
+                    .padding(1.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .weight(weight)
+                    .height(5.dp)
+                    .clickable {
+                        onSelectIndicator(index)
+                    }
+            )
+
+            LaunchedEffect(animateProgress) {
+                snapshotFlow { animateProgress }.collect { progress ->
+                    if (progress == 1f && enableAutoSwipe) {
+                        onFinishPageLoad(index)
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun getPageView(page: Page, openRecipe: (String) -> Unit) {

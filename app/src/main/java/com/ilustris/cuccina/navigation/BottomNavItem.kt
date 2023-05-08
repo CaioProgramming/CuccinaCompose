@@ -3,7 +3,6 @@ package com.ilustris.cuccina.navigation
 import ai.atick.material.MaterialColor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -50,11 +50,12 @@ enum class BottomNavItem(
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValues) {
+fun NavigationGraph(navController: NavHostController, bottomPadding: Dp) {
+
     NavHost(
         navController = navController,
         startDestination = HOME_ROUTE,
-        modifier = Modifier.padding(bottom = 50.dp)
+        modifier = Modifier.padding(bottom = bottomPadding)
     ) {
         composable(BottomNavItem.HOME.route) {
             CuccinaTheme {

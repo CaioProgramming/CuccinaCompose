@@ -57,6 +57,9 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(true)
                 }
 
+                var bottomPadding by remember {
+                    mutableStateOf(50.dp)
+                }
 
                 val appState = viewModel.state.observeAsState()
 
@@ -107,13 +110,14 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     } else {
-                        NavigationGraph(navController = navController, paddingValues = it)
+                        NavigationGraph(navController = navController, bottomPadding)
                     }
                 }
                 LaunchedEffect(navController) {
                     viewModel.checkUser()
                     navController.currentBackStackEntryFlow.collect { backStackEntry ->
                         title = getRouteTitle(backStackEntry.destination.route)
+                        bottomPadding = getPaddingForRoute(backStackEntry.destination.route)
                         showNavigation = (backStackEntry.destination.route != START_RECIPE_ROUTE)
                     }
                 }
@@ -121,6 +125,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+fun getPaddingForRoute(route: String?) =
+    when (route) {
+        HOME_ROUTE -> 50.dp
+        NEW_RECIPE_ROUTE -> 50.dp
+        START_RECIPE_ROUTE -> 0.dp
+        else -> 0.dp
+    }
+
 
 fun getRouteTitle(route: String?): String {
     if (route == null) return "Cuccina"
@@ -162,7 +175,7 @@ fun DefaultPreview() {
             )
         },
             bottomBar = { BottomNavigation(navController = navController) }) {
-            NavigationGraph(navController = navController, paddingValues = it)
+            NavigationGraph(navController = navController, 50.dp)
         }
     }
 }

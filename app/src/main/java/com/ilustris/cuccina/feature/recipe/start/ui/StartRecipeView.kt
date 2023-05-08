@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -23,7 +22,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -74,17 +72,17 @@ fun StartRecipeView(
             val (title, pager, indicator, nextButton, progressBar, backButton) = createRefs()
             Text(
                 text = it.name,
+                maxLines = 1,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 8.dp)
                     .constrainAs(title) {
-                        top.linkTo(backButton.bottom)
-                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        start.linkTo(backButton.end)
                         end.linkTo(parent.end)
                         width = Dimension.fillToConstraints
-                    }
-                    .fillMaxWidth(),
-                style = MaterialTheme.typography.headlineLarge
+                    },
+                style = MaterialTheme.typography.headlineSmall
             )
             pages?.value?.let { pages ->
 
@@ -152,8 +150,10 @@ fun StartRecipeView(
 
                 IconButton(modifier = Modifier
                     .constrainAs(backButton) {
-                        top.linkTo(parent.top)
+                        top.linkTo(title.top)
+                        bottom.linkTo(title.bottom)
                         start.linkTo(parent.start)
+                        height = Dimension.fillToConstraints
                     }
                     .animateContentSize(), onClick = {
                     if (pagerState.currentPage > 0) {
@@ -171,36 +171,32 @@ fun StartRecipeView(
                     )
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
+                PageIndicators(
+                    count = pages.size,
+                    currentPage = pagerState.currentPage,
                     modifier = Modifier
                         .constrainAs(indicator) {
-                            bottom.linkTo(parent.bottom)
+                            bottom.linkTo(nextButton.bottom)
+                            top.linkTo(nextButton.top)
                             start.linkTo(parent.start)
+                            end.linkTo(nextButton.start)
+                            width = Dimension.fillToConstraints
                         }
-                        .padding(16.dp)
-                        .wrapContentHeight()
-                        .fillMaxWidth(0.5f)
-                ) {
-                    repeat(pages.size) { index ->
-                        val isCurrentPage = pagerState.currentPage == index
-                        val color = if (isCurrentPage) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                        .padding(horizontal = 16.dp)
+                        .wrapContentHeight(),
+                    onSelectIndicator = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(it)
                         }
-                        val weight = if (isCurrentPage) 1f else 0.1f
-                        Box(
-                            modifier = Modifier
-                                .padding(1.dp)
-                                .animateContentSize(tween(1000))
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(color)
-                                .weight(weight)
-                                .height(5.dp)
-                        )
+                    },
+                    onFinishPageLoad = {
+                        scope.launch {
+                            if (pagerState.currentPage != pages.lastIndex) {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        }
                     }
-                }
+                )
 
 
                 IconButton(modifier = Modifier
