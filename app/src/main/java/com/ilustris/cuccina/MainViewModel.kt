@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
+import com.ilustris.cuccina.feature.profile.domain.service.UserService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(val userService: UserService) : ViewModel() {
 
     sealed class MainState {
         object Loading : MainState()
@@ -49,6 +50,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             if (result == null) {
                 updateState(MainState.RequireLogin)
             } else {
+                userService.saveUser()
                 updateState(MainState.Success)
             }
         }

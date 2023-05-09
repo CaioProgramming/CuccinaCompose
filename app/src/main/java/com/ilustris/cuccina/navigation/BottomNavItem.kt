@@ -30,11 +30,12 @@ import androidx.navigation.navArgument
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
 import com.ilustris.cuccina.feature.home.ui.HomeView
+import com.ilustris.cuccina.feature.profile.ui.PROFILE_ROUTE
+import com.ilustris.cuccina.feature.profile.ui.ProfileView
 import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.form.ui.NewRecipeView
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.ui.StartRecipeView
-import com.ilustris.cuccina.ui.theme.CuccinaTheme
 
 enum class BottomNavItem(
     val title: String,
@@ -45,7 +46,7 @@ enum class BottomNavItem(
     HOME(title = "Home", route = HOME_ROUTE, icon = R.drawable.round_home_24),
     NEW_RECIPE(title = "Publicar", route = NEW_RECIPE_ROUTE, icon = R.drawable.cook),
     START_RECIPE(title = "Fazer Receita", route = START_RECIPE_ROUTE, showOnNavigation = false),
-    PROFILE(title = "Eu", route = "PROFILE_ROUTE")
+    PROFILE(title = "Eu", route = PROFILE_ROUTE, icon = R.drawable.ic_cherries)
 
 }
 
@@ -58,25 +59,23 @@ fun NavigationGraph(navController: NavHostController, bottomPadding: Dp) {
         modifier = Modifier.padding(bottom = bottomPadding)
     ) {
         composable(BottomNavItem.HOME.route) {
-            CuccinaTheme {
-                HomeView(hiltViewModel(), navController)
-            }
+            HomeView(hiltViewModel(), navController)
         }
 
         composable(BottomNavItem.NEW_RECIPE.route) {
-            CuccinaTheme {
-                NewRecipeView(hiltViewModel())
-            }
+            NewRecipeView(hiltViewModel())
+        }
+
+        composable(BottomNavItem.PROFILE.route) {
+            ProfileView(hiltViewModel(), navController)
         }
 
         composable(
             BottomNavItem.START_RECIPE.route,
             arguments = listOf(navArgument("recipeId") { type = NavType.StringType })
         ) {
-            CuccinaTheme {
-                val recipeId = it.arguments?.getString("recipeId")
-                StartRecipeView(recipeId, hiltViewModel(), navController)
-            }
+            val recipeId = it.arguments?.getString("recipeId")
+            StartRecipeView(recipeId, hiltViewModel(), navController)
         }
     }
 }

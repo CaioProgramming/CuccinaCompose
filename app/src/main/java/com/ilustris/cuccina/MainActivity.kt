@@ -33,6 +33,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
+import com.ilustris.cuccina.feature.profile.ui.PROFILE_ROUTE
 import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
 import com.ilustris.cuccina.navigation.BottomNavigation
@@ -133,9 +134,7 @@ class MainActivity : ComponentActivity() {
 
 fun getPaddingForRoute(route: String?) =
     when (route) {
-        HOME_ROUTE -> 50.dp
-        NEW_RECIPE_ROUTE -> 50.dp
-        START_RECIPE_ROUTE -> 0.dp
+        HOME_ROUTE, PROFILE_ROUTE, NEW_RECIPE_ROUTE -> 50.dp
         else -> 0.dp
     }
 

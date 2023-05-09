@@ -15,10 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.*
 import com.ilustris.cuccina.R
 import com.silent.ilustriscore.core.utilities.delayedFunction
 
@@ -52,6 +49,7 @@ fun StateComponent(
             val celebrateProgress by animateLottieCompositionAsState(
                 celebrateComposition,
                 isPlaying = true,
+                iterations = LottieConstants.IterateForever
             )
 
             LottieAnimation(
@@ -66,7 +64,9 @@ fun StateComponent(
             Text(
                 text = message,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 style = MaterialTheme.typography.headlineMedium
             )
 
