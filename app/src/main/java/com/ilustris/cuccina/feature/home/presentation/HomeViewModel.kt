@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(
             val category = Category.values().find { category -> category.name == it.key }
                 ?: Category.UNKNOW
             RecipeGroup(category.title, it.value)
-        }.sortedBy { it.title }
+        }.sortedByDescending { it.recipes.size }
         homeList.postValue(categoriesRecipes)
     }
 
@@ -64,7 +64,7 @@ class HomeViewModel @Inject constructor(
             Page.AnimatedTextPage(
                 "Tem novidade na cozinha!",
                 "Novas receitas foram adicionadas ao app, confira!",
-                emojisBackgrounds,
+                emojisBackgrounds.filter { it != "❓" },
                 backColor = MaterialColor.OrangeA100,
                 textColor = MaterialColor.White
             )
@@ -76,8 +76,7 @@ class HomeViewModel @Inject constructor(
         highlightRecipes.postValue(pages)
     }
 
-    fun searchRecipe(it: String) {
-        TODO("Not yet implemented")
+    fun searchRecipe(query: String) {
     }
 
     fun updateCategory(category: Category) {

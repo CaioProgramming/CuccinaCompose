@@ -42,7 +42,7 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Un
         exit = fadeOut() + scaleOut()
     ) {
         Column(modifier = Modifier
-            .padding(8.dp)
+            .padding(vertical = 8.dp)
             .clickable {
                 onClickRecipe(recipe)
             }
@@ -94,7 +94,7 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Un
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .width(300.dp)
-                    .padding(8.dp)
+                    .padding(vertical = 4.dp, horizontal = 16.dp)
             )
 
         }

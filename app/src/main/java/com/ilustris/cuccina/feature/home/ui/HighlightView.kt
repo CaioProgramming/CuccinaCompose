@@ -29,7 +29,12 @@ import kotlin.math.absoluteValue
 
 
 @Composable
-fun HighLightSheet(pages: List<Page>, closeButton: () -> Unit, openRecipe: (String) -> Unit) {
+fun HighLightSheet(
+    pages: List<Page>,
+    autoSwipe: Boolean = false,
+    closeButton: () -> Unit,
+    openRecipe: (String) -> Unit
+) {
     ConstraintLayout {
         val pagerState = rememberPagerState()
         val scope = rememberCoroutineScope()
@@ -53,7 +58,7 @@ fun HighLightSheet(pages: List<Page>, closeButton: () -> Unit, openRecipe: (Stri
         PageIndicators(
             count = pages.size,
             currentPage = pagerState.currentPage,
-            enableAutoSwipe = true,
+            enableAutoSwipe = autoSwipe,
             modifier = Modifier
                 .constrainAs(indicators) {
                     top.linkTo(closeButton.top)

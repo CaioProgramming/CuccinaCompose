@@ -14,6 +14,7 @@ sealed class Page(
     class SimplePage(
         title: String,
         description: String,
+        val annotatedTexts: List<String> = emptyList(),
         backColor: Color? = null,
         textColor: Color? = null
     ) :
@@ -41,6 +42,11 @@ sealed class Page(
     class StepsPage(title: String, description: String, val steps: List<Step>) :
         Page(title, description)
 
-    class StepPage(title: String, description: String, val step: Step) : Page(title, description)
+    class StepPage(
+        title: String,
+        description: String,
+        val step: Step,
+        val ingredients: List<String>
+    ) : Page(title, description)
 }
 

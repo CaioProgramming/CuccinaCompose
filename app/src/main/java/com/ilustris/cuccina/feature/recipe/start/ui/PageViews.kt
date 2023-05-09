@@ -3,6 +3,7 @@
 package com.ilustris.cuccina.feature.recipe.start.ui
 
 import ai.atick.material.MaterialColor
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,12 +17,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
@@ -48,12 +50,36 @@ import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 
+fun annotatedPage(text: String, annotations: List<String>, color: Color) = buildAnnotatedString {
+    append(text)
+    Log.i("PageAnnotation", "annotatedPage: validating annotations -> $annotations on ($text)")
+    annotations.forEach { annotation ->
+        if (text.contains(annotation, true)) {
+            val startIndex = text.indexOf(annotation)
+            val endIndex = text.indexOf(annotation) + annotation.length
+            if (startIndex != -1 && endIndex != text.length) {
+                Log.i(javaClass.simpleName, "annotation: adding style to $annotation")
+                addStyle(
+                    SpanStyle(
+                        color = color,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    start = text.indexOf(annotation),
+                    end = (text.indexOf(annotation) + annotation.length)
+                )
+            }
+        }
+    }
+}
+
+
 @Composable
 fun SimplePageView(page: Page.SimplePage) {
 
     Column(
         modifier = Modifier
             .background(page.backColor ?: MaterialTheme.colorScheme.background)
+            .padding(16.dp)
             .fillMaxSize(), verticalArrangement = Arrangement.Center
     ) {
         val textColor = page.textColor ?: MaterialTheme.colorScheme.onBackground
@@ -66,11 +92,17 @@ fun SimplePageView(page: Page.SimplePage) {
                 .copy(textAlign = TextAlign.Center, color = textColor)
         )
         Text(
-            text = page.description,
-            modifier = Modifier.fillMaxWidth(),
+            text = annotatedPage(
+                page.description,
+                page.annotatedTexts,
+                MaterialTheme.colorScheme.primary
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             style = MaterialTheme
                 .typography
-                .labelMedium
+                .bodyMedium
                 .copy(textAlign = TextAlign.Center, color = textColor)
         )
     }
@@ -86,7 +118,7 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
         var texts = page.texts.toString().replace("[", "").replace("]", "").replace(",", "")
         val textColor = page.textColor ?: MaterialTheme.colorScheme.onBackground
 
-        repeat(5) {
+        repeat(3 * page.texts.size) {
             texts += texts
         }
 
@@ -97,11 +129,10 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier
                 .graphicsLayer {
-                    val scale = 2f
+                    val scale = 2.5f
                     scaleX = scale
                     scaleY = scale
                 }
-                .blur(2.dp, 2.dp)
                 .fillMaxSize()
         )
 
@@ -127,7 +158,7 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
                         shadow = Shadow(
                             color = MaterialColor.Black,
                             offset = Offset(1f, 1f),
-                            blurRadius = 1f
+                            blurRadius = 1.3f
                         )
                     )
             )
@@ -142,7 +173,7 @@ fun AnimatedTextPage(page: Page.AnimatedTextPage) {
                         shadow = Shadow(
                             color = MaterialColor.Black,
                             offset = Offset(1f, 1f),
-                            blurRadius = 1f
+                            blurRadius = 1.3f
                         ),
                         color = textColor
                     )
@@ -555,6 +586,7 @@ fun StepPageView(page: Page.StepPage) {
         items(instructions.size) { index ->
             InstructionItem(
                 instruction = instructions[index],
+                savedIngredients = page.ingredients.map { it.lowercase() },
                 count = index + 1,
                 editable = false,
                 onSelectInstruction = {},
@@ -583,7 +615,8 @@ fun PagePreview() {
             Page.StepPage(
                 "Passo 1",
                 "Estas são as etapas para fazer sua receita",
-                Step("Passo 1", ArrayList(listOf("Instrução 1", "Instrução 2")))
+                Step("Passo 1", ArrayList(listOf("Instrução 1", "Instrução 2"))),
+                emptyList()
             ),
             Page.AnimatedTextPage(
                 "Vamos cozinhar?",
@@ -618,7 +651,7 @@ fun PageIndicators(
     ) {
         repeat(count) { index ->
 
-            val delay = if (!isCurrentPage(index)) 1000 else 10000
+            val delay = if (!isCurrentPage(index)) 500 else 10000
             var progressTarget by remember {
                 mutableStateOf(0f)
             }

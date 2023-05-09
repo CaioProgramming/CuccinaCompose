@@ -44,17 +44,25 @@ fun InstructionItem(
 
     fun annotatedIngredient(instruction: String, color: Color) = buildAnnotatedString {
         append(instruction)
-        Log.i("InstructionItem", "annotatedIngredient: validating ingredients -> $savedIngredients")
+        Log.i(
+            "InstructionItem",
+            "annotatedIngredient: validating ingredients -> $savedIngredients on ($instruction)"
+        )
         savedIngredients.forEach { ingredient ->
             if (instruction.contains(ingredient, true)) {
-                addStyle(
-                    SpanStyle(
-                        color = color,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    start = instruction.indexOf(ingredient),
-                    end = (instruction.indexOf(ingredient) + ingredient.length)
-                )
+                val startIndex = instruction.indexOf(ingredient)
+                val endIndex = instruction.indexOf(ingredient) + ingredient.length
+                if (startIndex != -1 && endIndex != instruction.length) {
+                    Log.i(javaClass.simpleName, "annotatedIngredient: adding style to $ingredient")
+                    addStyle(
+                        SpanStyle(
+                            color = color,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        start = instruction.indexOf(ingredient),
+                        end = (instruction.indexOf(ingredient) + ingredient.length)
+                    )
+                }
             }
         }
     }

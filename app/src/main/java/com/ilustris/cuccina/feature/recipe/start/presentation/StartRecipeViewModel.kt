@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.service.RecipeService
+import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientMapper
 import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
 import com.silent.ilustriscore.core.model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,29 +23,66 @@ class StartRecipeViewModel @Inject constructor(
 
     fun getPages(recipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         val pageList = ArrayList<Page>()
-        val ingredientPlural = if (recipe.ingredients.size > 1) "s" else ""
         val stepPlural = if (recipe.steps.size > 1) "s" else ""
-        pageList.add(Page.RecipePage(recipe.name, recipe.description, recipe))
-        pageList.add(
-            Page.IngredientsPage(
-                "Ingredientes",
-                "Reúna os ingredientes, você vai precisar de ${recipe.ingredients.size} itens.\nQuando estiver pronto só precisa clicar em continuar}",
-                recipe.ingredients
+        pageList.run {
+            add(Page.RecipePage(recipe.name, recipe.description, recipe))
+            add(
+                Page.IngredientsPage(
+                    "Ingredientes",
+                    "Reúna os ingredientes, você vai precisar de ${recipe.ingredients.size} itens.\nQuando estiver pronto só precisa clicar em continuar}",
+                    recipe.ingredients
+                )
             )
-        )
-        pageList.add(
-            Page.StepsPage(
-                "Modo de Preparo",
-                "Essa receita tem ${recipe.steps.size} etapa$stepPlural, vamos começar?",
-                recipe.steps
+
+            var stepsDescription = ""
+
+            recipe.steps.forEachIndexed { index, step ->
+                stepsDescription += when (index) {
+                    0 -> {
+                        "A primeira etapa é ${step.title}, e possui ${step.instructions.size} instruções."
+                    }
+                    recipe.steps.lastIndex -> {
+                        "A última etapa é ${step.title}, e possui ${step.instructions.size} instruções."
+                    }
+                    else -> {
+                        "A próxima etapa é ${step.title}, e possui ${step.instructions.size} instruções."
+                    }
+                }
+            }
+            add(
+                Page.SimplePage(
+                    "Hora de cozinhar",
+                    "Essa receita tem ${recipe.steps.size} etapa$stepPlural.$stepsDescription\nvamos começar?"
+                )
             )
-        )
-        recipe.steps.forEach {
-            pageList.add(Page.StepPage(it.title, description = "Fique atento as instruções", it))
+            recipe.steps.forEachIndexed { index, step ->
+                val emojis = ArrayList<String>()
+                recipe.ingredients.shuffled().forEach {
+                    emojis.add(IngredientMapper.getIngredientSymbol(it.name))
+                }
+                pageList.add(
+                    Page.AnimatedTextPage(
+                        step.title,
+                        description = "Fique atento as instruções",
+                        texts = emojis.distinct().filter { it != "❓" }.take(3)
+                    )
+                )
+
+                step.instructions.forEachIndexed { index, instruction ->
+                    pageList.add(
+                        Page.SimplePage(
+                            "${index + 1}º Passo",
+                            instruction,
+                            recipe.ingredients.map { it.name.lowercase() }
+                        )
+                    )
+                }
+
+            }
+
+
+
+            pages.postValue(pageList)
         }
-
-        pages.postValue(pageList)
     }
-
-
 }

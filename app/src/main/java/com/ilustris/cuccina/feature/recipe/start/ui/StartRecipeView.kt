@@ -2,6 +2,7 @@
 
 package com.ilustris.cuccina.feature.recipe.start.ui
 
+import ai.atick.material.MaterialColor
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
@@ -22,6 +23,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -70,20 +73,7 @@ fun StartRecipeView(
                 .fillMaxSize()
         ) {
             val (title, pager, indicator, nextButton, progressBar, backButton) = createRefs()
-            Text(
-                text = it.name,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .constrainAs(title) {
-                        top.linkTo(parent.top)
-                        start.linkTo(backButton.end)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    },
-                style = MaterialTheme.typography.headlineSmall
-            )
+
             pages?.value?.let { pages ->
 
 
@@ -131,6 +121,7 @@ fun StartRecipeView(
                 }
 
 
+
                 HorizontalPager(
                     pageCount = pages.size,
                     userScrollEnabled = false,
@@ -143,10 +134,29 @@ fun StartRecipeView(
                         height = Dimension.fillToConstraints
                         width = Dimension.fillToConstraints
                     }) { index ->
-                    getPageView(page = pages[index]) {
-
-                    }
+                    getPageView(page = pages[index]) {}
                 }
+
+                Text(
+                    text = it.name,
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .constrainAs(title) {
+                            top.linkTo(parent.top)
+                            start.linkTo(backButton.end)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        }
+                        .padding(8.dp),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        shadow = Shadow(
+                            color = MaterialColor.Black,
+                            offset = Offset(1f, 1f),
+                            blurRadius = 1.3f
+                        )
+                    )
+                )
 
                 IconButton(modifier = Modifier
                     .constrainAs(backButton) {
@@ -247,6 +257,8 @@ fun StartRecipeView(
                         .size(70.dp)
                         .padding(8.dp)
                 )
+            } ?: kotlin.run {
+                StateComponent(message = "Carregando...")
             }
         }
     } ?: run {

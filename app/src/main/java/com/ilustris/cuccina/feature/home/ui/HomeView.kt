@@ -12,6 +12,7 @@
 
 package com.ilustris.cuccina.feature.home.ui
 
+import ai.atick.material.MaterialColor
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
@@ -20,6 +21,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,7 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +60,7 @@ import com.ilustris.cuccina.ui.theme.getStateComponent
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import java.util.*
 
 const val HOME_ROUTE = "home"
 
@@ -95,7 +100,7 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
         sheetContent = {
             highLights?.value?.let {
-                HighLightSheet(pages = it, {
+                HighLightSheet(pages = it, autoSwipe = sheetState.isVisible, {
                     scope.launch {
                         sheetState.hide()
                     }
@@ -132,9 +137,15 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
             ),
             exit = fadeOut(tween(500))
         ) {
-            LazyColumn(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
 
-                item {
+
+            LazyColumn(
+                modifier = Modifier
+                    .animateContentSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+
+                stickyHeader {
                     TopAppBar(
                         title = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -240,6 +251,29 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
                             }
                         }
                     }
+                }
+
+                item {
+                    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+                    Text(
+                        text = "Todas as receitas foram obtidas através de sites públicos e não possuem fins lucrativos.",
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                    )
+                    Text(
+                        text = "Desenvolvido por ilustris em 2019 - $currentYear",
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontStyle = FontStyle.Italic,
+                            color = MaterialColor.LightBlueA100
+                        )
+                    )
                 }
             }
         }

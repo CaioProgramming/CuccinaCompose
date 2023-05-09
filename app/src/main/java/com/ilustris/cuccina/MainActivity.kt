@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
 import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
             CuccinaTheme {
                 val navController = rememberNavController()
                 val viewModel: MainViewModel = hiltViewModel()
+                val systemUiController = rememberSystemUiController()
 
                 var title by remember {
                     mutableStateOf(appName)
@@ -119,6 +121,9 @@ class MainActivity : ComponentActivity() {
                         title = getRouteTitle(backStackEntry.destination.route)
                         bottomPadding = getPaddingForRoute(backStackEntry.destination.route)
                         showNavigation = (backStackEntry.destination.route != START_RECIPE_ROUTE)
+                        systemUiController.isStatusBarVisible =
+                            (backStackEntry.destination.route != START_RECIPE_ROUTE)
+
                     }
                 }
             }
