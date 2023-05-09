@@ -6,22 +6,25 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
+import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.model.RecipeGroup
 import com.ilustris.cuccina.feature.recipe.ui.component.RecipeCard
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
+import com.ilustris.cuccina.ui.theme.defaultRadius
 
 @Composable
-fun RecipeGroupList(recipeGroup: RecipeGroup, orientation: Int) {
+fun RecipeGroupList(recipeGroup: RecipeGroup, orientation: Int, openRecipe: (Recipe) -> Unit) {
 
     Column {
         Text(
@@ -34,23 +37,26 @@ fun RecipeGroupList(recipeGroup: RecipeGroup, orientation: Int) {
             recipeGroup.recipes.forEach {
                 RecipeCard(
                     recipe = it,
+                    onClickRecipe = openRecipe,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(350.dp)
-                        .padding(8.dp)
+                        .padding(16.dp)
                 )
             }
         } else {
-            val configuration = LocalConfiguration.current
-            val screenWidth = configuration.screenWidthDp.dp
             LazyRow {
 
                 items(recipeGroup.recipes.size) {
                     RecipeCard(
                         recipe = recipeGroup.recipes[it],
+                        onClickRecipe = openRecipe,
                         modifier = Modifier
+                            .padding(16.dp)
                             .width(300.dp)
                             .height(150.dp)
+                            .clip(RoundedCornerShape(defaultRadius))
+
                     )
                 }
             }
@@ -73,8 +79,8 @@ fun RecipeGroupList(recipeGroup: RecipeGroup, orientation: Int) {
 fun RecipeListPreview() {
     CuccinaTheme {
         Column {
-            RecipeGroupList(RecipeGroup("Receitas Novas", emptyList()), HORIZONTAL)
-            RecipeGroupList(RecipeGroup("Receitas disponíveis", emptyList()), VERTICAL)
+            RecipeGroupList(RecipeGroup("Receitas Novas", emptyList()), HORIZONTAL) {}
+            RecipeGroupList(RecipeGroup("Receitas disponíveis", emptyList()), VERTICAL) {}
         }
 
     }

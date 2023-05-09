@@ -16,7 +16,6 @@ object IngredientMapper {
         }
     }?.emoji ?: "❓"
 
-
     private fun emojisDictionary() = listOf(
         EmojiDic(
             "🐟",
@@ -122,6 +121,8 @@ object IngredientMapper {
         EmojiDic("🍯", listOf("mel", "honey", "honeys", "mels")),
         EmojiDic("🧊", listOf("gelo", "ice")),
     )
+
+    fun emojiList() = emojisDictionary().map { it.emoji }
 
     data class EmojiDic(val emoji: String, val ingredientNames: List<String>)
 

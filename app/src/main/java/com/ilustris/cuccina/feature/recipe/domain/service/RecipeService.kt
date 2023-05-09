@@ -28,12 +28,14 @@ class RecipeService : BaseService() {
 
     override suspend fun addData(data: BaseBean): ServiceResult<DataException, BaseBean> {
         try {
+            val user = currentUser()!!
             val recipe = data as Recipe
             val uploadTask =
                 storageReference().storage.reference.child(recipe.name.lowercase().trim())
                     .putFile(Uri.parse(recipe.photo)).await()
             return if (uploadTask.task.isSuccessful) {
                 recipe.photo = uploadTask.storage.downloadUrl.await().toString()
+                recipe.userID = user.uid
                 super.addData(data)
             } else {
                 ServiceResult.Error(DataException.UPLOAD)

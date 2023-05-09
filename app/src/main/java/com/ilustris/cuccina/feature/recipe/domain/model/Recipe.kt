@@ -12,6 +12,7 @@ data class Recipe(
     var time: Long = 0,
     var portions: Int = 0,
     var author: String = "",
+    var userID: String = "",
     var ingredients: List<Ingredient> = emptyList(),
     var steps: List<Step> = emptyList(),
     var likes: List<String> = emptyList(),

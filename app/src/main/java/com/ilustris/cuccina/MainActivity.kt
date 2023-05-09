@@ -31,8 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
-import com.ilustris.cuccina.feature.recipe.form.presentation.ui.NEW_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
 import com.ilustris.cuccina.navigation.BottomNavigation
 import com.ilustris.cuccina.navigation.NavigationGraph
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
@@ -48,6 +50,7 @@ class MainActivity : ComponentActivity() {
             CuccinaTheme {
                 val navController = rememberNavController()
                 val viewModel: MainViewModel = hiltViewModel()
+                val systemUiController = rememberSystemUiController()
 
                 var title by remember {
                     mutableStateOf(appName)
@@ -56,6 +59,9 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(true)
                 }
 
+                var bottomPadding by remember {
+                    mutableStateOf(50.dp)
+                }
 
                 val appState = viewModel.state.observeAsState()
 
@@ -83,37 +89,7 @@ class MainActivity : ComponentActivity() {
 
                 showNavigation = showAppBar(appState.value)
 
-                Scaffold(topBar = {
-
-                    AnimatedVisibility(
-                        visible = showNavigation,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        TopAppBar(
-                            title = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Image(
-                                        painterResource(id = R.drawable.cherry),
-                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
-                                        contentDescription = "Cuccina",
-                                        modifier = Modifier
-                                            .size(32.dp)
-                                            .padding(4.dp)
-                                    )
-                                    Text(
-                                        text = title,
-                                        style = MaterialTheme.typography.headlineLarge.copy(
-                                            fontWeight = FontWeight.Black
-                                        )
-                                    )
-                                }
-                            },
-                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-                        )
-                    }
-
-                }, bottomBar = {
+                Scaffold(bottomBar = {
                     AnimatedVisibility(
                         visible = showNavigation,
                         enter = fadeIn(),
@@ -136,13 +112,18 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     } else {
-                        NavigationGraph(navController = navController, paddingValues = it)
+                        NavigationGraph(navController = navController, bottomPadding)
                     }
                 }
                 LaunchedEffect(navController) {
                     viewModel.checkUser()
                     navController.currentBackStackEntryFlow.collect { backStackEntry ->
                         title = getRouteTitle(backStackEntry.destination.route)
+                        bottomPadding = getPaddingForRoute(backStackEntry.destination.route)
+                        showNavigation = (backStackEntry.destination.route != START_RECIPE_ROUTE)
+                        systemUiController.isStatusBarVisible =
+                            (backStackEntry.destination.route != START_RECIPE_ROUTE)
+
                     }
                 }
             }
@@ -150,11 +131,21 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun getPaddingForRoute(route: String?) =
+    when (route) {
+        HOME_ROUTE -> 50.dp
+        NEW_RECIPE_ROUTE -> 50.dp
+        START_RECIPE_ROUTE -> 0.dp
+        else -> 0.dp
+    }
+
+
 fun getRouteTitle(route: String?): String {
     if (route == null) return "Cuccina"
     return when (route) {
         HOME_ROUTE -> "Cuccina"
         NEW_RECIPE_ROUTE -> "Nova receita"
+        START_RECIPE_ROUTE -> ""
         else -> "Cuccina"
     }
 }
@@ -189,7 +180,7 @@ fun DefaultPreview() {
             )
         },
             bottomBar = { BottomNavigation(navController = navController) }) {
-            NavigationGraph(navController = navController, paddingValues = it)
+            NavigationGraph(navController = navController, 50.dp)
         }
     }
 }
