@@ -6,6 +6,7 @@
 package com.ilustris.cuccina.feature.profile.ui
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -105,7 +107,7 @@ fun ProfileView(profileViewModel: ProfileViewModel, navController: NavController
             val iconColor =
                 if (isComplete) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground
             val backColor =
-                if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+                if (pagerState.currentPage == 0) MaterialTheme.colorScheme.primary else Color.Transparent
             val icon =
                 if (isComplete) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
 
@@ -115,7 +117,7 @@ fun ProfileView(profileViewModel: ProfileViewModel, navController: NavController
             )
             val backColorAnimation by animateColorAsState(
                 targetValue = backColor,
-                animationSpec = tween(100)
+                animationSpec = tween(250, easing = EaseInOut)
             )
 
             val nextPageTitle = if (!isComplete) {

@@ -20,8 +20,10 @@ class StartRecipeViewModel @Inject constructor(
 ) : BaseViewModel<Recipe>(application) {
 
     val pages = MutableLiveData<List<Page>>()
+    val isFavorite = MutableLiveData(false)
 
     fun getPages(recipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
+        isFavorite.postValue(recipe.likes.contains(service.currentUser()!!.uid))
         val pageList = ArrayList<Page>()
         val stepPlural = if (recipe.steps.size > 1) "s" else ""
         pageList.run {
@@ -84,5 +86,22 @@ class StartRecipeViewModel @Inject constructor(
 
             pages.postValue(pageList)
         }
+    }
+
+    fun favoriteRecipe(recipe: Recipe) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val uid = service.currentUser()!!.uid
+            val isFavorite = recipe.likes.contains(uid)
+            if (isFavorite) {
+                recipe.likes.remove(uid)
+            } else {
+                recipe.likes.add(uid)
+            }
+            editData(recipe)
+        }
+    }
+
+    fun checkFavorite(recipe: Recipe) {
+        isFavorite.postValue(recipe.likes.contains(service.currentUser()!!.uid))
     }
 }
