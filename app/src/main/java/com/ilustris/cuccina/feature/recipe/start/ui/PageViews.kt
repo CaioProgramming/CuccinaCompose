@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -330,6 +332,35 @@ fun RecipePageView(page: Page.RecipePage) {
                             category = it,
                             selectedCategory = recipeCategory,
                             categorySelected = {})
+                    }
+                }
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .wrapContentSize(align = Alignment.CenterStart)
+                            .padding(8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.surface, RoundedCornerShape(
+                                    defaultRadius
+                                )
+                            )
+                            .padding(8.dp)
+                    ) {
+                        val contentColor = MaterialTheme.colorScheme.onBackground
+                        Icon(
+                            Icons.Default.Favorite,
+                            tint = contentColor,
+                            contentDescription = "Favoritos",
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(4.dp)
+                        )
+                        Text(
+                            text = ("${recipe.likes.size}").uppercase(),
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                            color = contentColor
+                        )
                     }
                 }
                 item {

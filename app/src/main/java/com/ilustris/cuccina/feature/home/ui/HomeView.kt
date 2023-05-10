@@ -7,7 +7,7 @@
     ExperimentalMaterialApi::class,
     ExperimentalFoundationApi::class,
     ExperimentalMaterialApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class
 )
 
 package com.ilustris.cuccina.feature.home.ui
@@ -42,10 +42,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -82,6 +85,9 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
     val categories = Category.values().toList().sortedBy { it.description }
     val selectedCategory = homeViewModel?.currentCategory?.observeAsState()
     val systemUiController = rememberSystemUiController()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -90,6 +96,7 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
     var query by remember {
         mutableStateOf("")
     }
+
 
     LaunchedEffect(Unit) {
         homeViewModel?.loadHome()
@@ -188,16 +195,25 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
                             Icon(Icons.Rounded.Search, contentDescription = "Pesquisar")
                         },
                         trailingIcon = {
-                            Icon(
-                                Icons.Sharp.Close,
-                                contentDescription = "fechar",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .clickable {
-                                        query = ""
-                                        homeViewModel?.searchRecipe(query)
-                                    }
-                            )
+                            AnimatedVisibility(
+                                visible = query.isNotEmpty(),
+                                enter = fadeIn() + scaleIn(),
+                                exit = fadeOut()
+                            ) {
+                                Icon(
+                                    Icons.Sharp.Close,
+                                    contentDescription = "fechar",
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .clickable {
+                                            keyboardController?.hide()
+                                            focusManager.clearFocus()
+                                            query = ""
+                                            homeViewModel?.searchRecipe(query)
+                                        }
+                                )
+                            }
+
                         },
                         onValueChange = {
                             query = it
@@ -223,6 +239,8 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
                             autoCorrect = true
                         ),
                         keyboardActions = KeyboardActions(onSearch = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
                             homeViewModel?.searchRecipe(query)
                         }),
                         maxLines = 1,
