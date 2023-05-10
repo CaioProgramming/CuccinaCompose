@@ -6,13 +6,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
@@ -21,7 +19,6 @@ import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.model.RecipeGroup
 import com.ilustris.cuccina.feature.recipe.ui.component.RecipeCard
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
-import com.ilustris.cuccina.ui.theme.defaultRadius
 
 @Composable
 fun RecipeGroupList(recipeGroup: RecipeGroup, orientation: Int, openRecipe: (Recipe) -> Unit) {
@@ -55,7 +52,6 @@ fun RecipeGroupList(recipeGroup: RecipeGroup, orientation: Int, openRecipe: (Rec
                             .padding(16.dp)
                             .width(300.dp)
                             .height(150.dp)
-                            .clip(RoundedCornerShape(defaultRadius))
 
                     )
                 }

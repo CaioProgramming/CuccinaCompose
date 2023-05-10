@@ -121,9 +121,10 @@ class MainActivity : ComponentActivity() {
                     navController.currentBackStackEntryFlow.collect { backStackEntry ->
                         title = getRouteTitle(backStackEntry.destination.route)
                         bottomPadding = getPaddingForRoute(backStackEntry.destination.route)
-                        showNavigation = (backStackEntry.destination.route != START_RECIPE_ROUTE)
+                        showNavigation =
+                            (backStackEntry.destination.route != START_RECIPE_ROUTE && backStackEntry.destination.route != PROFILE_ROUTE)
                         systemUiController.isStatusBarVisible =
-                            (backStackEntry.destination.route != START_RECIPE_ROUTE)
+                            (backStackEntry.destination.route != START_RECIPE_ROUTE && backStackEntry.destination.route != PROFILE_ROUTE)
 
                     }
                 }
@@ -134,7 +135,7 @@ class MainActivity : ComponentActivity() {
 
 fun getPaddingForRoute(route: String?) =
     when (route) {
-        HOME_ROUTE, PROFILE_ROUTE, NEW_RECIPE_ROUTE -> 50.dp
+        HOME_ROUTE, NEW_RECIPE_ROUTE -> 50.dp
         else -> 0.dp
     }
 

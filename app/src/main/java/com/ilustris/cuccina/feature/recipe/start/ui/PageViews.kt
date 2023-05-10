@@ -1,16 +1,20 @@
-@file:OptIn(ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 
 package com.ilustris.cuccina.feature.recipe.start.ui
 
 import ai.atick.material.MaterialColor
 import android.util.Log
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
@@ -45,6 +49,8 @@ import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
 import com.ilustris.cuccina.feature.recipe.step.domain.model.Step
 import com.ilustris.cuccina.feature.recipe.step.presentation.ui.InstructionItem
 import com.ilustris.cuccina.feature.recipe.step.presentation.ui.StepItem
+import com.ilustris.cuccina.feature.recipe.ui.component.RecipeCard
+import com.ilustris.cuccina.ui.theme.CuccinaLoader
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
 import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.skydoves.landscapist.ImageOptions
@@ -71,7 +77,6 @@ fun annotatedPage(text: String, annotations: List<String>, color: Color) = build
         }
     }
 }
-
 
 @Composable
 fun SimplePageView(page: Page.SimplePage) {
@@ -597,6 +602,115 @@ fun StepPageView(page: Page.StepPage) {
     }
 }
 
+@Composable
+fun ProfilePageView(page: Page.ProfilePage) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                page.backColor ?: MaterialTheme.colorScheme.background,
+                RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 20.dp,
+                    bottomEnd = 20.dp
+                )
+            )
+            .padding(16.dp)
+    ) {
+        val (profilePic, username) = createRefs()
+        val user = page.userModel
+        GlideImage(
+            imageModel = { user.photoUrl },
+            imageOptions = ImageOptions(
+                alignment = Alignment.Center,
+                "",
+                contentScale = ContentScale.Fit
+            ),
+            loading = {
+                CuccinaLoader()
+            },
+            modifier = Modifier
+                .constrainAs(profilePic) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .size(150.dp)
+                .clip(CircleShape)
+                .padding(16.dp)
+                .border(
+                    width = 5.dp,
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.secondary,
+                            MaterialTheme.colorScheme.tertiary
+                        )
+                    ),
+                    shape = CircleShape
+                )
+                .clip(CircleShape)
+        )
+
+        Text(
+            user.name,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = page.textColor ?: MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Black
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .constrainAs(username) {
+                    top.linkTo(profilePic.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .fillMaxWidth()
+        )
+
+    }
+}
+
+@Composable
+fun RecipesPageView(page: Page.RecipeListPage, openRecipe: (String) -> Unit) {
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        verticalItemSpacing = 16.dp,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item(span = StaggeredGridItemSpan.FullLine) {
+            Text(
+                text = page.title,
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item(span = StaggeredGridItemSpan.FullLine) {
+            Text(
+                text = page.description,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        items(page.recipes.size) { index ->
+            RecipeCard(
+                recipe = page.recipes[index],
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) { recipe ->
+                openRecipe(recipe.id)
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PagePreview() {
@@ -710,6 +824,8 @@ fun getPageView(page: Page, openRecipe: (String) -> Unit) {
         is Page.RecipePage -> RecipePageView(page)
         is Page.HighlightPage -> HighLightPage(page = page, openRecipe = openRecipe)
         is Page.AnimatedTextPage -> AnimatedTextPage(page = page)
+        is Page.ProfilePage -> ProfilePageView(page = page)
+        is Page.RecipeListPage -> RecipesPageView(page = page, openRecipe = openRecipe)
     }
 }
 
