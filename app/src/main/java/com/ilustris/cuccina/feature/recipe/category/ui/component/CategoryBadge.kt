@@ -1,18 +1,20 @@
 package com.ilustris.cuccina.feature.recipe.category.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,16 +67,60 @@ fun CategoryBadge(
 
 }
 
-@Preview
+@Composable
+fun CategoryIcon(
+    category: Category,
+    selectedCategory: Category?,
+    categorySelected: (Category) -> Unit
+) {
+
+    fun isSelected() = category == selectedCategory
+
+    IconButton(
+        onClick = {
+            categorySelected(category)
+        },
+        modifier = Modifier
+            .wrapContentSize(align = Alignment.CenterStart)
+            .padding(16.dp)
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface, CircleShape)
+            .clip(CircleShape)
+    ) {
+        val contentColor =
+            if (isSelected()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+        Image(
+            painterResource(id = category.icon),
+            colorFilter = ColorFilter.tint(contentColor),
+            contentDescription = category.title,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp)
+        )
+    }
+
+}
+
+@Preview(showBackground = true)
 @Composable
 fun BadgePreview() {
     CuccinaTheme {
-        LazyRow {
-            items(Category.values().size) {
-                CategoryBadge(Category.values()[it], Category.values().random()) {
+        LazyColumn {
+            item {
+                LazyRow {
+                    items(Category.values().size) {
+                        CategoryBadge(Category.values()[it], Category.values().random()) {
+
+                        }
+                    }
+                }
+            }
+            items((Category.values().size)) {
+                CategoryIcon(Category.values()[it], Category.values().random()) {
 
                 }
             }
         }
+
     }
 }

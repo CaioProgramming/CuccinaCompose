@@ -8,7 +8,7 @@ import com.ilustris.cuccina.feature.profile.domain.model.UserModel
 import com.ilustris.cuccina.feature.profile.domain.service.UserService
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.service.RecipeService
-import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
+import com.ilustris.cuccina.ui.theme.Page
 import com.silent.ilustriscore.core.model.BaseViewModel
 import com.silent.ilustriscore.core.model.ServiceResult
 import com.silent.ilustriscore.core.model.ViewModelBaseState

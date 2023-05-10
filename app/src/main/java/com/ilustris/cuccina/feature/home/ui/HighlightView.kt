@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
 import com.ilustris.cuccina.feature.recipe.start.ui.PageIndicators
 import com.ilustris.cuccina.feature.recipe.start.ui.getPageView
+import com.ilustris.cuccina.ui.theme.Page
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
