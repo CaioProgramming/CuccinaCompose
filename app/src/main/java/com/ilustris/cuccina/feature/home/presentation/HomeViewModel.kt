@@ -77,6 +77,24 @@ class HomeViewModel @Inject constructor(
     }
 
     fun searchRecipe(query: String) {
+        updateViewState(ViewModelBaseState.LoadingState)
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = service.getAllData()
+            if (data.isSuccess) {
+                val recipes = (data.success.data as List<Recipe>).filter {
+                    it.name.contains(query, true) || it.description.contains(
+                        query,
+                        true
+                    ) || it.ingredients.any { ingredient ->
+                        ingredient.name.contains(query, true)
+                    }
+                }
+                groupRecipes(recipes)
+            } else {
+                updateViewState(ViewModelBaseState.ErrorState(data.error.errorException))
+            }
+            updateViewState(ViewModelBaseState.LoadCompleteState)
+        }
     }
 
     fun updateCategory(category: Category) {

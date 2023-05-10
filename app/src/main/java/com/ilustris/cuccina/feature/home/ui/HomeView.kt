@@ -20,28 +20,37 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.sharp.Close
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -56,6 +65,7 @@ import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE_IMPL
 import com.ilustris.cuccina.feature.recipe.ui.RecipeGroupList
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
+import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.ilustris.cuccina.ui.theme.getStateComponent
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -72,12 +82,14 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
     val categories = Category.values().toList().sortedBy { it.description }
     val selectedCategory = homeViewModel?.currentCategory?.observeAsState()
     val systemUiController = rememberSystemUiController()
-
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
     val scope = rememberCoroutineScope()
+    var query by remember {
+        mutableStateOf("")
+    }
 
     LaunchedEffect(Unit) {
         homeViewModel?.loadHome()
@@ -166,6 +178,57 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                    )
+                }
+
+                item {
+                    TextField(
+                        value = query,
+                        leadingIcon = {
+                            Icon(Icons.Rounded.Search, contentDescription = "Pesquisar")
+                        },
+                        trailingIcon = {
+                            Icon(
+                                Icons.Sharp.Close,
+                                contentDescription = "fechar",
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        query = ""
+                                        homeViewModel?.searchRecipe(query)
+                                    }
+                            )
+                        },
+                        onValueChange = {
+                            query = it
+                        },
+                        placeholder = {
+                            Text(
+                                text = "Busque por receitas ou ingredientes...",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        },
+                        shape = RoundedCornerShape(defaultRadius),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Search,
+                            autoCorrect = true
+                        ),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            homeViewModel?.searchRecipe(query)
+                        }),
+                        maxLines = 1,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
                     )
                 }
 
