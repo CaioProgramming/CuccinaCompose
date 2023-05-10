@@ -1,6 +1,8 @@
 package com.ilustris.cuccina.feature.recipe.start.domain.model
 
+import ai.atick.material.MaterialColor
 import androidx.compose.ui.graphics.Color
+import com.ilustris.cuccina.feature.profile.domain.model.UserModel
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.Ingredient
 import com.ilustris.cuccina.feature.recipe.step.domain.model.Step
@@ -32,6 +34,23 @@ sealed class Page(
         backColor: Color? = null,
         textColor: Color? = null
     ) : Page(title, description, backColor, textColor)
+
+    class ProfilePage(
+        title: String = "",
+        description: String = "",
+        val userModel: UserModel
+    ) : Page(
+        title,
+        description,
+        backColor = MaterialColor.Orange800,
+        textColor = MaterialColor.Black
+    )
+
+    class RecipeListPage(
+        title: String,
+        description: String,
+        val recipes: List<Recipe>
+    ) : Page(title, description)
 
     class RecipePage(title: String, description: String, val recipe: Recipe) :
         Page(title, description)

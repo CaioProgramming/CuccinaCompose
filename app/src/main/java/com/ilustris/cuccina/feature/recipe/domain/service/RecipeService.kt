@@ -14,6 +14,7 @@ import kotlinx.coroutines.tasks.await
 class RecipeService : BaseService() {
     override val dataPath: String = "recipes"
 
+    override var requireAuth: Boolean = true
 
     override fun deserializeDataSnapshot(dataSnapshot: DocumentSnapshot): Recipe? {
         dataSnapshot.toObject(Recipe::class.java)?.let {
@@ -49,4 +50,16 @@ class RecipeService : BaseService() {
     override fun deserializeDataSnapshot(dataSnapshot: QueryDocumentSnapshot): Recipe {
         return dataSnapshot.toObject(Recipe::class.java)
     }
+
+    suspend fun getRecipesByUserLike(userID: String): ServiceResult<DataException, ArrayList<BaseBean>> {
+        if (requireAuth && currentUser() == null) return ServiceResult.Error(DataException.AUTH)
+        val query = reference.whereArrayContains("likes", userID).get().await()
+        return if (!query.isEmpty) {
+            ServiceResult.Success(getDataList(query.documents))
+        } else {
+            ServiceResult.Error(DataException.NOTFOUND)
+        }
+    }
+
+    suspend fun getRecipesByUser(userID: String) = query(userID, "userID")
 }

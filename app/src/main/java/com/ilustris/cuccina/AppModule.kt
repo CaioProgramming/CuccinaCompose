@@ -1,6 +1,7 @@
 package com.ilustris.cuccina
 
 import com.firebase.ui.auth.AuthUI
+import com.ilustris.cuccina.feature.profile.domain.service.UserService
 import com.ilustris.cuccina.feature.recipe.domain.service.RecipeService
 import dagger.Module
 import dagger.Provides
@@ -16,6 +17,9 @@ object AppModule {
     @Singleton
     @Provides
     fun providesRecipeService() = RecipeService()
+
+    @Provides
+    fun providesUserService() = UserService()
 
 
     val loginProviders = listOf(

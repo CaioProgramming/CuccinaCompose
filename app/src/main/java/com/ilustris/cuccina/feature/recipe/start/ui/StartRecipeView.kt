@@ -16,9 +16,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -53,6 +51,7 @@ fun StartRecipeView(
     val recipe = remember {
         mutableStateOf<Recipe?>(null)
     }
+    val isFavorite = startRecipeViewModel?.isFavorite?.observeAsState()
     val pages = startRecipeViewModel?.pages?.observeAsState()
     var progress by remember { mutableStateOf(0f) }
     val progressAnimation by animateFloatAsState(
@@ -72,7 +71,7 @@ fun StartRecipeView(
                 .animateContentSize(tween(1000))
                 .fillMaxSize()
         ) {
-            val (title, pager, indicator, nextButton, progressBar, backButton) = createRefs()
+            val (title, pager, indicator, nextButton, progressBar, backButton, favoriteButton) = createRefs()
 
             pages?.value?.let { pages ->
 
@@ -145,10 +144,10 @@ fun StartRecipeView(
                         .constrainAs(title) {
                             top.linkTo(parent.top)
                             start.linkTo(backButton.end)
-                            end.linkTo(parent.end)
+                            end.linkTo(favoriteButton.start)
                             width = Dimension.fillToConstraints
                         }
-                        .padding(8.dp),
+                        .padding(16.dp),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         shadow = Shadow(
                             color = MaterialColor.Black,
@@ -179,6 +178,22 @@ fun StartRecipeView(
                         contentDescription = "Voltar",
                         tint = MaterialTheme.colorScheme.onBackground
                     )
+                }
+
+                IconButton(modifier = Modifier.constrainAs(favoriteButton) {
+                    top.linkTo(title.top)
+                    bottom.linkTo(title.bottom)
+                    end.linkTo(parent.end)
+                    height = Dimension.fillToConstraints
+                }, onClick = {
+                    startRecipeViewModel.favoriteRecipe(it)
+                }) {
+                    val favoriteIcon =
+                        if (isFavorite?.value == true) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                    val color =
+                        if (isFavorite?.value == true) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onBackground
+                    val description = if (isFavorite?.value == true) "Desfavoritar" else "Favoritar"
+                    Icon(favoriteIcon, tint = color, contentDescription = description)
                 }
 
                 PageIndicators(
@@ -274,6 +289,13 @@ fun StartRecipeView(
                 val foundedRecipe = this.data as Recipe
                 recipe.value = foundedRecipe
             }
+
+            is ViewModelBaseState.DataUpdateState -> {
+                val updatedRecipe = this.data as Recipe
+                recipe.value = updatedRecipe
+                startRecipeViewModel.checkFavorite(updatedRecipe)
+            }
+
             is ViewModelBaseState.ErrorState -> {
                 StateComponent(
                     message = this.dataException.code.message,

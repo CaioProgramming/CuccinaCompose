@@ -4,6 +4,7 @@ package com.ilustris.cuccina.feature.recipe.ui.component
 
 import android.util.Log
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,10 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.request.RequestOptions
 import com.ilustris.cuccina.R
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
@@ -27,7 +30,6 @@ import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.silent.ilustriscore.core.utilities.delayedFunction
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
-import com.skydoves.landscapist.glide.GlideImageState
 
 @Composable
 fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Unit) {
@@ -51,29 +53,24 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Un
 
             GlideImage(
                 imageModel = { recipe.photo },
-                requestOptions = {
-                    RequestOptions().useAnimationPool(true)
-                },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center,
                 ), failure = {
-                    Text(
-                        text = "Foto nao encontrada",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(8.dp)
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_cherries),
+                        colorFilter = ColorFilter.tint(
+                            MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.5f
+                            )
+                        ),
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = "Foto não encontrada"
                     )
-                },
-                onImageStateChanged = {
-                    if (it is GlideImageState.Success) {
-                        visibility = true
-                    } else if (it is GlideImageState.Failure) {
-                        visibility = false
-                        Log.e(
-                            javaClass.simpleName,
-                            "RecipeCard: Error loading image ${it.reason?.message}",
-                        )
-                    }
+                    Log.e(
+                        javaClass.simpleName,
+                        "RecipeCard: Error loading image ${it.reason?.message}",
+                    )
                 },
                 previewPlaceholder = R.drawable.ic_cherries,
                 modifier = modifier
@@ -87,6 +84,7 @@ fun RecipeCard(modifier: Modifier, recipe: Recipe, onClickRecipe: (Recipe) -> Un
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
                         RoundedCornerShape(defaultRadius)
                     )
+                    .clip(RoundedCornerShape(defaultRadius))
             )
             val category = Category.values().find { it.name == recipe.category } ?: Category.UNKNOW
             Text(
