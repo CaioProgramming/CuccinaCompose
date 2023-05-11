@@ -62,4 +62,5 @@ class RecipeService : BaseService() {
     }
 
     suspend fun getRecipesByUser(userID: String) = query(userID, "userID")
+    suspend fun getRecipesByCategory(category: String) = query(category, "category")
 }

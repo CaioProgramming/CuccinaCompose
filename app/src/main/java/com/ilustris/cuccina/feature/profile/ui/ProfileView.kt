@@ -38,9 +38,9 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ilustris.cuccina.feature.profile.presentation.ProfileViewModel
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE_IMPL
-import com.ilustris.cuccina.feature.recipe.start.ui.getPageView
 import com.ilustris.cuccina.feature.recipe.ui.component.StateComponent
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
+import com.ilustris.cuccina.ui.theme.getPageView
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -143,7 +143,7 @@ fun ProfileView(profileViewModel: ProfileViewModel, navController: NavController
                 }) {
                 getPageView(page = pages.value!![it], openRecipe = { id ->
                     openRecipe(id)
-                })
+                },{}, {})
             }
 
 

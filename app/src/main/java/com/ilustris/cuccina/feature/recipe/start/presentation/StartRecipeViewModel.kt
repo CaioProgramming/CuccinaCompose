@@ -26,6 +26,7 @@ class StartRecipeViewModel @Inject constructor(
         isFavorite.postValue(recipe.likes.contains(service.currentUser()!!.uid))
         val pageList = ArrayList<Page>()
         val stepPlural = if (recipe.steps.size > 1) "s" else ""
+        val categoryRecipes = service.getRecipesByCategory(recipe.category)
         pageList.run {
             add(Page.RecipePage(recipe.name, recipe.description, recipe))
             add(
@@ -69,13 +70,35 @@ class StartRecipeViewModel @Inject constructor(
                         texts = emojis.distinct().filter { it != "❓" }.take(3)
                     )
                 )
-
                 step.instructions.forEachIndexed { index, instruction ->
                     pageList.add(
                         Page.SimplePage(
                             "${index + 1}º Passo",
                             instruction,
                             recipe.ingredients.map { it.name.lowercase() }
+                        )
+                    )
+                }
+
+            }
+
+            add(
+                Page.SuccessPage(
+                    "Parabéns! Você concluiu a receita.",
+                    "Agora é só aproveitar! Que tal compartilhar uma receita própria também?",
+                    "Publicar receita"
+                )
+            )
+
+            if (categoryRecipes.isSuccess) {
+                val filterdList =
+                    (categoryRecipes.success.data as List<Recipe>).filter { it.id != recipe.id }
+                if (filterdList.isNotEmpty()) {
+                    add(
+                        Page.RecipeListPage(
+                            "Outras receitas que você pode gostar...",
+                            "Que tal experimentar outras receitas?",
+                            filterdList
                         )
                     )
                 }

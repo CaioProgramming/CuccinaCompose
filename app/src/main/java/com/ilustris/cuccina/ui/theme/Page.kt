@@ -52,7 +52,7 @@ sealed class Page(
         val recipes: List<Recipe>
     ) : Page(title, description)
 
-    class RecipePage(title: String, description: String, val recipe: Recipe) :
+    class RecipePage(title: String, description: String, val recipe: Recipe, val user: UserModel) :
         Page(title, description)
 
     class IngredientsPage(title: String, description: String, val ingredients: List<Ingredient>) :
@@ -66,6 +66,18 @@ sealed class Page(
         description: String,
         val step: Step,
         val ingredients: List<String>
+    ) : Page(title, description)
+
+    class SuccessPage(
+        title: String,
+        description: String,
+        val actionText: String
+    ) : Page(title, description)
+
+    class OtherChefsPage(
+        title: String,
+        description: String,
+        val chefs: List<UserModel>
     ) : Page(title, description)
 }
 
