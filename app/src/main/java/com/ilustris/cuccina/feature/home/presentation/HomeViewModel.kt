@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
             } else {
                 updateViewState(ViewModelBaseState.ErrorState(data.error.errorException))
             }
-            delay(4000)
+            delay(1000)
             updateViewState(ViewModelBaseState.LoadCompleteState)
         }
     }
