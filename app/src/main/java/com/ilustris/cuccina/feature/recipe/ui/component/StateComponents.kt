@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.ilustris.cuccina.R
+import com.silent.ilustriscore.core.model.ViewModelBaseState
 import com.silent.ilustriscore.core.utilities.delayedFunction
 
 @Composable
@@ -66,7 +67,7 @@ fun StateComponent(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(16.dp),
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -88,4 +89,36 @@ fun StateComponent(
 
 }
 
+
+@Composable
+fun getStateComponent(state: ViewModelBaseState, action: (ViewModelBaseState) -> Unit) {
+
+
+    val message = when (state) {
+        ViewModelBaseState.RequireAuth -> "Você precisa estar logado para acessar essa funcionalidade"
+        ViewModelBaseState.DataDeletedState -> "Receita deletada com sucesso"
+        ViewModelBaseState.LoadingState -> "Carregando..."
+        ViewModelBaseState.LoadCompleteState -> "Carregamento completo"
+        is ViewModelBaseState.DataRetrievedState -> "Receita carregada com sucesso"
+        is ViewModelBaseState.DataListRetrievedState -> "Receitas carregadas com sucesso"
+        is ViewModelBaseState.DataSavedState -> "Dados salvos com sucesso"
+        is ViewModelBaseState.DataUpdateState -> "Dados atualizados com sucesso"
+        is ViewModelBaseState.FileUploadedState -> "Arquivos enviados com sucesso"
+        is ViewModelBaseState.ErrorState -> "Ocorreu um erro inesperado(${state.dataException.code.message}"
+    }
+
+    val buttonText = when (state) {
+        ViewModelBaseState.RequireAuth -> "Fazer login"
+        ViewModelBaseState.DataDeletedState -> "Ok"
+        is ViewModelBaseState.ErrorState -> "Tentar novamente"
+        is ViewModelBaseState.DataSavedState -> "Ok"
+        else -> null
+    }
+
+    StateComponent(
+        message = message,
+        action = { action(state) },
+        buttonText = buttonText
+    )
+}
 

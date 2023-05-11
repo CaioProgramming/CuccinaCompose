@@ -1,6 +1,6 @@
 @file:OptIn(
     ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class
 )
 
 package com.ilustris.cuccina.feature.recipe.form.ui
@@ -17,49 +17,55 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.navigation.NavController
+import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
 import com.ilustris.cuccina.feature.recipe.form.presentation.viewmodel.NewRecipeViewModel
-import com.ilustris.cuccina.ui.theme.CuccinaTheme
+import com.ilustris.cuccina.feature.recipe.ui.component.getStateComponent
 import com.ilustris.cuccina.ui.theme.getFormView
+import com.silent.ilustriscore.core.model.ViewModelBaseState
 
 const val NEW_RECIPE_ROUTE = "new_recipe"
 
 @Composable
-fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
+fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel, navController: NavController) {
 
-    val recipe = newRecipeViewModel?.recipe?.observeAsState()?.value
-    val pages = newRecipeViewModel?.pages?.observeAsState()?.value
+    val recipe = newRecipeViewModel.recipe.observeAsState().value
+    val pages = newRecipeViewModel.pages.observeAsState().value
+    val baseState = newRecipeViewModel.viewModelState.observeAsState().value
     val pagerState = rememberPagerState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Log.i("NewRecipeView", "NewRecipeView: current recipe $recipe")
 
-    AnimatedVisibility(visible = pages?.isNotEmpty() == true, enter = fadeIn(), exit = fadeOut()) {
+    val showPages = pages?.isNotEmpty() == true && baseState != ViewModelBaseState.LoadingState
+
+    AnimatedVisibility(visible = showPages, enter = fadeIn(), exit = fadeOut()) {
         val pageList = pages!!
         HorizontalPager(pageCount = pageList.size, state = pagerState) {
             getFormView(formPage = pageList[it])
         }
     }
 
-    LaunchedEffect(recipe) {
-        snapshotFlow { recipe }.collect {
-            Log.i("NewRecipeView", "NewRecipeView: recipe changed $it")
-            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+    AnimatedVisibility(visible = !showPages, enter = fadeIn(), exit = fadeOut()) {
+        baseState?.let {
+            getStateComponent(state = it, action = {
+                if (it is ViewModelBaseState.DataSavedState) {
+                    navController.navigate(HOME_ROUTE)
+                }
+            })
         }
     }
 
+    LaunchedEffect(recipe) {
+        Log.i("NewRecipeView", "NewRecipeView: recipe changed $recipe")
+        keyboardController?.hide()
+        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+    }
+
     LaunchedEffect(Unit) {
-        newRecipeViewModel?.buildFirstPage()
+        newRecipeViewModel.buildFirstPage()
     }
 
-
-}
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun NewRecipeFormPreview() {
-    CuccinaTheme {
-        NewRecipeView()
-    }
 }

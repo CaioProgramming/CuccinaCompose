@@ -7,7 +7,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -167,7 +166,8 @@ fun ImageForm(formPage: FormPage.ImageFormPage) {
             failure = {
                 Column(
                     modifier = Modifier
-                        .size(200.dp)
+                        .fillMaxWidth()
+                        .height(200.dp)
                         .padding(16.dp)
                         .background(
                             MaterialTheme.colorScheme.surface, RoundedCornerShape(
@@ -359,19 +359,22 @@ fun IngredientsForm(formPage: FormPage.IngredientsFormPage) {
         mutableStateListOf<Ingredient>()
     }
 
-    ModalBottomSheetLayout(sheetContent = {
-        IngredientSheet(newIngredient = {
-            ingredients.add(it)
-        })
-    }) {
-
+    ModalBottomSheetLayout(modifier = Modifier.fillMaxSize(),
+        sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+        sheetState = sheetState, sheetContent = {
+            IngredientSheet(newIngredient = {
+                ingredients.add(it)
+                scope.launch {
+                    sheetState.hide()
+                }
+            })
+        }) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = columnModifier.background(backColor)
 
         ) {
-
             Text(
                 text = formPage.title,
                 color = textColor,
@@ -407,6 +410,7 @@ fun IngredientsForm(formPage: FormPage.IngredientsFormPage) {
                     IconButton(
                         onClick = {
                             scope.launch {
+                                Log.i("IngredientForm", "IngredientsForm: showing sheet")
                                 sheetState.show()
                             }
                         }, modifier = Modifier
@@ -459,11 +463,17 @@ fun StepsForm(formPage: FormPage.StepsFormPage) {
         mutableStateListOf<Step>()
     }
 
-    ModalBottomSheetLayout(sheetContent = {
-        StepSheet(savedIngredients = formPage.currentIngredients, newStep = {
-            steps.add(it)
-        })
-    }) {
+    ModalBottomSheetLayout(modifier = Modifier.fillMaxSize(),
+        sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+        sheetState = sheetState,
+        sheetContent = {
+            StepSheet(savedIngredients = formPage.currentIngredients, newStep = {
+                steps.add(it)
+                scope.launch {
+                    sheetState.hide()
+                }
+            })
+        }) {
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -506,7 +516,10 @@ fun StepsForm(formPage: FormPage.StepsFormPage) {
                         },
                         modifier = Modifier
                             .padding(16.dp)
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                RoundedCornerShape(defaultRadius)
+                            )
                             .fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.surface,
@@ -533,7 +546,7 @@ fun StepsForm(formPage: FormPage.StepsFormPage) {
                         enabled = steps.isNotEmpty(),
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            formPage.sendData(steps)
+                            formPage.sendData(steps.toList())
                         }) {
                         Text(text = formPage.actionText, color = textColor)
                     }
@@ -575,7 +588,11 @@ fun CategoryForm(formPage: FormPage.CategoryFormPage) {
             style = MaterialTheme.typography.bodyMedium
         )
 
-        LazyVerticalGrid(columns = GridCells.Fixed(3), horizontalArrangement = Arrangement.Center) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
             val categories = Category.values()
             items(categories.size) {
                 CategoryIcon(
@@ -607,10 +624,12 @@ fun PortionsForm(formPage: FormPage.PortionsFormPage) {
     val backColor = formPage.backColor ?: MaterialTheme.colorScheme.background
     val textColor = formPage.textColor ?: MaterialTheme.colorScheme.onBackground
     val portions = remember {
-        mutableStateOf(1)
+        mutableStateOf("")
     }
     Column(
-        modifier = columnModifier.background(backColor)
+        modifier = columnModifier.background(backColor),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
 
@@ -627,22 +646,19 @@ fun PortionsForm(formPage: FormPage.PortionsFormPage) {
         )
 
 
-        TextField(value = portions.value.toString(),
+        TextField(
+            value = portions.value,
             onValueChange = {
-                if (it.isBlank()) {
-                    portions.value = 0
-                } else {
-                    val newPortions = it.filter { char -> char.isDigit() }.toInt()
-                    if (newPortions <= 100) {
-                        portions.value = newPortions
-                    }
+                val newPortions = it.filter { char -> char.isDigit() }.toInt()
+                if (newPortions <= 100) {
+                    portions.value = newPortions.toString()
                 }
             },
-            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape),
+                .padding(16.dp),
+            singleLine = true,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
@@ -659,10 +675,10 @@ fun PortionsForm(formPage: FormPage.PortionsFormPage) {
             })
 
         Button(
-            enabled = portions.value > 0,
+            enabled = portions.value.isNotEmpty() && portions.value.toInt() > 0,
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                formPage.sendData(portions.value)
+                formPage.sendData(portions.value.toInt())
             }) {
             Text(text = formPage.actionText, color = textColor)
         }

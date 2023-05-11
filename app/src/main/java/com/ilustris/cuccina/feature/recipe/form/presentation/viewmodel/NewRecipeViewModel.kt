@@ -143,6 +143,7 @@ class NewRecipeViewModel @Inject constructor(
                 steps = step
             )
         )
+        recipe.value?.let { saveData(it) }
     }
 
     fun updateRecipeStep(step: Step) {
