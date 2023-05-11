@@ -73,7 +73,7 @@ class NewRecipeViewModel @Inject constructor(
     fun updateRecipeDescription(description: String) {
         recipe.postValue(recipe.value?.copy(description = description))
         updatePage(FormPage.ImageFormPage {
-            updateRecipePhoto(it.path.toString())
+            updateRecipePhoto(it)
         })
     }
 

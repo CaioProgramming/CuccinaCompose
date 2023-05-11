@@ -46,7 +46,6 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel? = null) {
             Log.i("NewRecipeView", "NewRecipeView: recipe changed $it")
             pagerState.animateScrollToPage(pagerState.currentPage + 1)
         }
-        pagerState.animateScrollToPage(pagerState.currentPage + 1)
     }
 
     LaunchedEffect(Unit) {
