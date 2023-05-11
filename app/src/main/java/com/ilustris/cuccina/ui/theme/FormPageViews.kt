@@ -547,7 +547,7 @@ fun StepsForm(formPage: FormPage.StepsFormPage) {
                         enabled = steps.isNotEmpty(),
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            formPage.sendData(steps.toList())
+                            formPage.sendData(steps)
                         }) {
                         Text(text = formPage.actionText, color = textColor)
                     }
@@ -650,6 +650,10 @@ fun PortionsForm(formPage: FormPage.PortionsFormPage) {
         TextField(
             value = portions.value,
             onValueChange = {
+                if (it.isEmpty()) {
+                    portions.value = ""
+                    return@TextField
+                }
                 val newPortions = it.filter { char -> char.isDigit() }.toInt()
                 if (newPortions <= 100) {
                     portions.value = newPortions.toString()

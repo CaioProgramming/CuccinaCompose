@@ -35,10 +35,8 @@ import com.silent.ilustriscore.core.model.ViewModelBaseState
 fun appColors() =
     listOf(
         MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.secondary,
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-        MaterialTheme.colorScheme.tertiary,
-        MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f),
+        MaterialColor.DeepOrange600,
+        MaterialColor.PinkA700,
     )
 
 @Composable

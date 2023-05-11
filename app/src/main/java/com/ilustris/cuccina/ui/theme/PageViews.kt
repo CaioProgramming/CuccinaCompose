@@ -119,7 +119,7 @@ fun PageIndicators(
 
 
 @Composable
-fun getPageView(\
+fun getPageView(
     page: Page,
     openRecipe: (String) -> Unit,
     openChefPage: (String) -> Unit,

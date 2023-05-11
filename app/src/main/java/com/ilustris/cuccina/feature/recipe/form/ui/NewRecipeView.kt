@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.navigation.NavController
@@ -25,6 +26,7 @@ import com.ilustris.cuccina.feature.recipe.form.presentation.viewmodel.NewRecipe
 import com.ilustris.cuccina.feature.recipe.ui.component.getStateComponent
 import com.ilustris.cuccina.ui.theme.getFormView
 import com.silent.ilustriscore.core.model.ViewModelBaseState
+import kotlinx.coroutines.launch
 
 const val NEW_RECIPE_ROUTE = "new_recipe"
 
@@ -32,18 +34,28 @@ const val NEW_RECIPE_ROUTE = "new_recipe"
 fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel, navController: NavController) {
 
     val recipe = newRecipeViewModel.recipe.observeAsState().value
-    val pages = newRecipeViewModel.pages.observeAsState().value
+    val pages = newRecipeViewModel.pages.observeAsState()
     val baseState = newRecipeViewModel.viewModelState.observeAsState().value
+    val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     val keyboardController = LocalSoftwareKeyboardController.current
 
+
     Log.i("NewRecipeView", "NewRecipeView: current recipe $recipe")
+    Log.i("NewRecipeView", "current pages -> ${pages.value?.size}")
+    coroutineScope.launch {
+        keyboardController?.hide()
+        pages.value?.let {
+            pagerState.animateScrollToPage(it.lastIndex)
+        }
+    }
+
 
     val showPages =
-        pages?.isNotEmpty() == true && baseState != ViewModelBaseState.LoadingState && baseState !is ViewModelBaseState.DataSavedState
+        pages.value?.isNotEmpty() == true && baseState != ViewModelBaseState.LoadingState && baseState !is ViewModelBaseState.DataSavedState
 
     AnimatedVisibility(visible = showPages, enter = fadeIn(), exit = fadeOut()) {
-        val pageList = pages!!
+        val pageList = pages.value!!
         HorizontalPager(pageCount = pageList.size, state = pagerState) {
             getFormView(formPage = pageList[it])
         }
@@ -59,11 +71,7 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel, navController: NavCont
         }
     }
 
-    LaunchedEffect(recipe) {
-        Log.i("NewRecipeView", "NewRecipeView: recipe changed $recipe")
-        keyboardController?.hide()
-        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-    }
+
 
     LaunchedEffect(Unit) {
         newRecipeViewModel.buildFirstPage()

@@ -137,7 +137,7 @@ fun StartRecipeView(
                         width = Dimension.fillToConstraints
                     }) { index ->
                     getPageView(page = pages[index], { id ->
-                        navController.navigate(START_RECIPE_ROUTE_IMPL + id)
+                            navController.navigate(START_RECIPE_ROUTE_IMPL + id)
                     }, { chefId -> }) {
                         navController.navigate(NEW_RECIPE_ROUTE)
                     }

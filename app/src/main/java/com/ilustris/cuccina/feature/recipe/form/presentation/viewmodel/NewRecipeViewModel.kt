@@ -138,12 +138,12 @@ class NewRecipeViewModel @Inject constructor(
 
     fun updateRecipeSteps(step: List<Step>) {
         Log.i(javaClass.simpleName, "updateRecipeSteps: adding step -> $step")
-        recipe.postValue(
-            recipe.value?.copy(
+        recipe.value = recipe.value?.copy(steps = step)
+        recipe.value?.let {
+            saveData(it.apply {
                 steps = step
-            )
-        )
-        recipe.value?.let { saveData(it) }
+            })
+        }
     }
 
     fun updateRecipeStep(step: Step) {

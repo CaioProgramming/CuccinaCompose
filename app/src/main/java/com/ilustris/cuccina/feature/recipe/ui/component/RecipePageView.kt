@@ -37,8 +37,11 @@ import com.ilustris.cuccina.feature.recipe.step.presentation.ui.StepItem
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
 import com.ilustris.cuccina.ui.theme.Page
 import com.ilustris.cuccina.ui.theme.defaultRadius
+import com.silent.ilustriscore.core.utilities.DateFormats
+import com.silent.ilustriscore.core.utilities.format
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
+import java.util.*
 
 @Composable
 fun RecipePageView(page: Page.RecipePage) {
@@ -46,50 +49,11 @@ fun RecipePageView(page: Page.RecipePage) {
         Modifier.fillMaxSize()
     ) {
         val recipe = page.recipe
+        val formattedDate = Calendar.getInstance().apply {
+            timeInMillis = recipe.publishDate
+        }.time.format(DateFormats.DD_OF_MM_FROM_YYYY)
 
         item {
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                GlideImage(
-                    imageModel = { page.user.photoUrl },
-                    imageOptions = ImageOptions(
-                        alignment = Alignment.Center,
-                        "",
-                        contentScale = ContentScale.Fit
-                    ),
-                    failure = {
-                        Image(
-                            modifier = Modifier
-                                .size(70.dp)
-                                .clip(CircleShape)
-                                .padding(16.dp)
-                                .border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape),
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_cherries),
-                            contentDescription = page.user.name
-                        )
-                    },
-                    loading = {
-                        CuccinaLoader()
-                    },
-                    modifier = Modifier
-                        .size(70.dp)
-                        .clip(CircleShape)
-                        .padding(16.dp)
-                        .border(
-                            width = 5.dp,
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.secondary,
-                                    MaterialTheme.colorScheme.tertiary
-                                )
-                            ),
-                            shape = CircleShape
-                        )
-                        .clip(CircleShape)
-                )
-            }
-
 
             GlideImage(
                 modifier = Modifier
@@ -125,6 +89,57 @@ fun RecipePageView(page: Page.RecipePage) {
                 previewPlaceholder = R.drawable.ic_cherries
             )
 
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                GlideImage(
+                    imageModel = { page.user.photoUrl },
+                    imageOptions = ImageOptions(
+                        alignment = Alignment.Center,
+                        "",
+                        contentScale = ContentScale.Crop
+                    ),
+                    failure = {
+                        Image(
+                            modifier = Modifier
+                                .size(70.dp)
+                                .clip(CircleShape)
+                                .padding(16.dp)
+                                .border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_cherries),
+                            contentDescription = page.user.name
+                        )
+                    },
+                    loading = {
+                        CuccinaLoader()
+                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface, CircleShape)
+                        .border(
+                            width = 2.dp,
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary,
+                                    MaterialTheme.colorScheme.tertiary
+                                )
+                            ),
+                            shape = CircleShape
+                        )
+                )
+
+                Text(
+                    text = "${page.user.name} • $formattedDate",
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
+                )
+            }
 
             LazyRow(
                 verticalAlignment = Alignment.CenterVertically,
@@ -278,11 +293,7 @@ fun RecipePageView(page: Page.RecipePage) {
             )
         }
 
-        item {
-            Row {
 
-            }
-        }
 
         item {
             Text(
