@@ -39,7 +39,8 @@ fun NewRecipeView(newRecipeViewModel: NewRecipeViewModel, navController: NavCont
 
     Log.i("NewRecipeView", "NewRecipeView: current recipe $recipe")
 
-    val showPages = pages?.isNotEmpty() == true && baseState != ViewModelBaseState.LoadingState
+    val showPages =
+        pages?.isNotEmpty() == true && baseState != ViewModelBaseState.LoadingState && baseState !is ViewModelBaseState.DataSavedState
 
     AnimatedVisibility(visible = showPages, enter = fadeIn(), exit = fadeOut()) {
         val pageList = pages!!
