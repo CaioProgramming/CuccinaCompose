@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.ilustris.cuccina.feature.recipe.start.ui.PageIndicators
-import com.ilustris.cuccina.feature.recipe.start.ui.getPageView
 import com.ilustris.cuccina.ui.theme.Page
+import com.ilustris.cuccina.ui.theme.PageIndicators
+import com.ilustris.cuccina.ui.theme.getPageView
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
@@ -33,7 +33,9 @@ fun HighLightSheet(
     pages: List<Page>,
     autoSwipe: Boolean = false,
     closeButton: () -> Unit,
-    openRecipe: (String) -> Unit
+    openRecipe: (String) -> Unit,
+    openNewRecipe: () -> Unit,
+    openChefPage: (String) -> Unit,
 ) {
     ConstraintLayout {
         val pagerState = rememberPagerState()
@@ -52,7 +54,7 @@ fun HighLightSheet(
                 }
                 .fillMaxSize()
         ) { index ->
-            getPageView(page = pages[index], openRecipe)
+            getPageView(page = pages[index], openRecipe, openChefPage, openNewRecipe)
         }
 
         PageIndicators(

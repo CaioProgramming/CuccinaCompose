@@ -14,6 +14,7 @@ import com.silent.ilustriscore.core.model.BaseViewModel
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,6 +42,7 @@ class HomeViewModel @Inject constructor(
             } else {
                 updateViewState(ViewModelBaseState.ErrorState(data.error.errorException))
             }
+            delay(4000)
             updateViewState(ViewModelBaseState.LoadCompleteState)
         }
     }

@@ -64,6 +64,7 @@ import com.ilustris.cuccina.feature.home.ui.component.BannerCard
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
 import com.ilustris.cuccina.feature.recipe.domain.model.RecipeGroup
+import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE_IMPL
 import com.ilustris.cuccina.feature.recipe.ui.RecipeGroupList
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
@@ -119,13 +120,15 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
         sheetContent = {
             highLights?.value?.let {
-                HighLightSheet(pages = it, autoSwipe = sheetState.isVisible, {
+                HighLightSheet(pages = it, autoSwipe = sheetState.isVisible, closeButton = {
                     scope.launch {
                         sheetState.hide()
                     }
-                }) { id ->
+                }, openRecipe = { id ->
                     navigateToRecipe(id)
-                }
+                }, openNewRecipe = {
+                    navController.navigate(NEW_RECIPE_ROUTE)
+                }, openChefPage = { chefId -> })
             }
         }) {
 

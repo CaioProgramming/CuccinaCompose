@@ -30,8 +30,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
+import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.presentation.StartRecipeViewModel
 import com.ilustris.cuccina.feature.recipe.ui.component.StateComponent
+import com.ilustris.cuccina.ui.theme.PageIndicators
+import com.ilustris.cuccina.ui.theme.getPageView
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -133,7 +136,11 @@ fun StartRecipeView(
                         height = Dimension.fillToConstraints
                         width = Dimension.fillToConstraints
                     }) { index ->
-                    getPageView(page = pages[index]) {}
+                    getPageView(page = pages[index], { id ->
+                            navController.navigate(START_RECIPE_ROUTE_IMPL + id)
+                    }, { chefId -> }) {
+                        navController.navigate(NEW_RECIPE_ROUTE)
+                    }
                 }
 
                 Text(
@@ -165,13 +172,13 @@ fun StartRecipeView(
                         height = Dimension.fillToConstraints
                     }
                     .animateContentSize(), onClick = {
-                    if (pagerState.currentPage > 0) {
                         scope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            if (pagerState.currentPage > 0) {
+                                pagerState.animateScrollToPage(0)
+                            } else {
+                                navController.popBackStack()
+                            }
                         }
-                    } else {
-                        navController.popBackStack()
-                    }
                 }) {
                     Icon(
                         Icons.Default.KeyboardArrowLeft,
