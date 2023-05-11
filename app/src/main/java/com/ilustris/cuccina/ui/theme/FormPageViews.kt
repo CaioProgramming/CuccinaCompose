@@ -324,7 +324,8 @@ fun CaloriesForm(formPage: FormPage.CaloriesFormPage) {
         Text(
             text = formPage.description,
             color = textColor,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(16.dp)
         )
 
 
