@@ -10,7 +10,7 @@ enum class IngredientType(val description: String, val abreviation: String, val 
     POUNDS("Grama(s)", "g", Texture.POUND),
     UNITY("Unidade(s)", "uni", Texture.UNIT),
     KILOGRAMS("Kilo(s)", "kg", Texture.UNIT),
-    LITERS("Litro(s)", "l", Texture.LIQUID),
+    LITERS("Litro(s)", "l", Texture.UNIT),
     MILLILITERS("Mililitro(s)", "ml", Texture.LIQUID),
     SOUP("Colher(es) de sopa", "cs", Texture.UNIT),
     TEA("Colher(es) de chá", "chá", Texture.UNIT),

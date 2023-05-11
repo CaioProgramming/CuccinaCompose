@@ -4,10 +4,13 @@ package com.ilustris.cuccina.feature.recipe.step.presentation.ui
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +45,7 @@ fun StepSheet(savedIngredients: List<Ingredient>, newStep: (Step) -> Unit) {
 
         LazyColumn(
             modifier = Modifier
+                .animateContentSize(tween(500))
                 .padding(16.dp)
         ) {
             Log.i("StepSheet", "saved instructions ->  ${instructions.toList()}")
@@ -53,6 +57,13 @@ fun StepSheet(savedIngredients: List<Ingredient>, newStep: (Step) -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
+                )
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
                 )
 
                 TextField(
@@ -74,7 +85,7 @@ fun StepSheet(savedIngredients: List<Ingredient>, newStep: (Step) -> Unit) {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
-                    textStyle = MaterialTheme.typography.headlineMedium,
+                    textStyle = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.secondary),
                 )
 
                 fun getInstructionCount() = instructions.size + 1
@@ -122,6 +133,8 @@ fun StepSheet(savedIngredients: List<Ingredient>, newStep: (Step) -> Unit) {
                         val step = Step(stepTitle.value, ArrayList(instructions.toList()))
                         Log.i("StepSheet", "StepSheet: saving steps -> $step")
                         newStep(Step(stepTitle.value, ArrayList(instructions.toList())))
+                        stepTitle.value = ""
+                        instructions.clear()
                     }) { Text(text = "Salvar etapa") }
                 }
             }

@@ -64,10 +64,10 @@ import com.ilustris.cuccina.feature.home.ui.component.BannerCard
 import com.ilustris.cuccina.feature.recipe.category.domain.model.Category
 import com.ilustris.cuccina.feature.recipe.category.ui.component.CategoryBadge
 import com.ilustris.cuccina.feature.recipe.domain.model.RecipeGroup
-import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE_IMPL
 import com.ilustris.cuccina.feature.recipe.ui.RecipeGroupList
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
+import com.ilustris.cuccina.ui.theme.Page
 import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.ilustris.cuccina.ui.theme.getStateComponent
 import com.silent.ilustriscore.core.model.ViewModelBaseState

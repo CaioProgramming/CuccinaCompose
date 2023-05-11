@@ -47,13 +47,13 @@ import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientMap
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientType
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.HorizontalIngredientItem
 import com.ilustris.cuccina.feature.recipe.ingredient.presentation.ui.IngredientItem
-import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
 import com.ilustris.cuccina.feature.recipe.step.domain.model.Step
 import com.ilustris.cuccina.feature.recipe.step.presentation.ui.InstructionItem
 import com.ilustris.cuccina.feature.recipe.step.presentation.ui.StepItem
 import com.ilustris.cuccina.feature.recipe.ui.component.RecipeCard
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
+import com.ilustris.cuccina.ui.theme.Page
 import com.ilustris.cuccina.ui.theme.defaultRadius
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
@@ -857,6 +857,7 @@ fun getPageView(page: Page, openRecipe: (String) -> Unit) {
         is Page.AnimatedTextPage -> AnimatedTextPage(page = page)
         is Page.ProfilePage -> ProfilePageView(page = page)
         is Page.RecipeListPage -> RecipesPageView(page = page, openRecipe = openRecipe)
+        else -> {}
     }
 }
 

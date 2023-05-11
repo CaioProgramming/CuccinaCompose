@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.domain.service.RecipeService
 import com.ilustris.cuccina.feature.recipe.ingredient.domain.model.IngredientMapper
-import com.ilustris.cuccina.feature.recipe.start.domain.model.Page
+import com.ilustris.cuccina.ui.theme.Page
 import com.silent.ilustriscore.core.model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

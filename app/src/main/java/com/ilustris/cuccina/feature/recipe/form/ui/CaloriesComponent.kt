@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 
 @Composable
 fun CaloriesComponent(calories: Int? = null, newCalories: (Int) -> Unit) {
@@ -30,6 +31,7 @@ fun CaloriesComponent(calories: Int? = null, newCalories: (Int) -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight(align = Alignment.CenterVertically)
             .padding(8.dp)
     ) {
 
@@ -76,9 +78,11 @@ fun CaloriesComponent(calories: Int? = null, newCalories: (Int) -> Unit) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .size(140.dp))
+                .fillMaxSize(0.6f)
+        )
 
-        Column(verticalArrangement = Arrangement.Center,
+        Column(
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .constrainAs(caloriesText) {
@@ -86,18 +90,28 @@ fun CaloriesComponent(calories: Int? = null, newCalories: (Int) -> Unit) {
                     bottom.linkTo(caloriesBar.bottom)
                     end.linkTo(caloriesBar.end)
                     start.linkTo(caloriesBar.start)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
                 }
                 .padding(8.dp)) {
 
-            Text(text = "🔥")
+            Text(
+                text = "🔥",
+                style = MaterialTheme.typography.displaySmall.copy(
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Normal
+                ),
+            )
 
-            TextField(value = calories?.toString() ?: "",
+            TextField(
+                value = calories?.toString() ?: "",
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
                         text = "0",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineSmall.copy(
+                        style = MaterialTheme.typography.headlineLarge.copy(
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                             fontWeight = FontWeight.Normal
@@ -141,7 +155,7 @@ fun CaloriesComponent(calories: Int? = null, newCalories: (Int) -> Unit) {
 
             Text(
                 text = "/1000kcal",
-                style = MaterialTheme.typography.labelMedium.copy(
+                style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 )

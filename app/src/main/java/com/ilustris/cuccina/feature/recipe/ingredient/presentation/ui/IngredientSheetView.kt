@@ -174,7 +174,7 @@ fun IngredientSheet(newIngredient: (Ingredient) -> Unit) {
                     val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                     vibrator.vibrate(200)
                     val selectedIngredientType =
-                        ingredientTypes.find { type -> type.description.contains(it, true) }
+                        ingredientTypes.find { type -> type.description.equals(it, true) }
                     ingredientType.value = selectedIngredientType ?: ingredientTypes.random()
                     if (quantity.value > (getRange(ingredientType.value.texture)?.last() ?: 0)) {
                         quantity.value = getRange(ingredientType.value.texture)?.last() ?: 0

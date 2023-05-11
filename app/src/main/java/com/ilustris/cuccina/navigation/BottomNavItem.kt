@@ -63,7 +63,7 @@ fun NavigationGraph(navController: NavHostController, bottomPadding: Dp) {
         }
 
         composable(BottomNavItem.NEW_RECIPE.route) {
-            NewRecipeView(hiltViewModel())
+            NewRecipeView(hiltViewModel(), navController)
         }
 
         composable(BottomNavItem.PROFILE.route) {

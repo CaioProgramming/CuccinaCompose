@@ -1,4 +1,4 @@
-package com.ilustris.cuccina.feature.recipe.start.domain.model
+package com.ilustris.cuccina.ui.theme
 
 import ai.atick.material.MaterialColor
 import androidx.compose.ui.graphics.Color
