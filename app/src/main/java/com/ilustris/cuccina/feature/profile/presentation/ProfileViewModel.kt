@@ -95,11 +95,12 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun getUserData() {
+    fun getUserData(userId: String?) {
         updateViewState(ViewModelBaseState.LoadingState)
         viewModelScope.launch(Dispatchers.IO) {
             service.currentUser()?.let {
-                when (val userTask = service.getSingleData(it.uid)) {
+                val uid = if (userId.isNullOrEmpty()) it.uid else userId
+                when (val userTask = service.getSingleData(uid)) {
                     is ServiceResult.Success -> {
                         user.postValue(userTask.data as UserModel)
                         updatePages(Page.ProfilePage(userModel = userTask.data as UserModel))

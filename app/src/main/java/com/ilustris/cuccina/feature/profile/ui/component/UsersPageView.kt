@@ -83,6 +83,7 @@ fun ChefsPageView(page: Page.OtherChefsPage, openChefPage: (String) -> Unit) {
                 },
                 modifier = Modifier
                     .size(150.dp)
+                    .background(MaterialTheme.colorScheme.surface, CircleShape)
                     .clip(CircleShape)
                     .padding(16.dp)
                     .border(

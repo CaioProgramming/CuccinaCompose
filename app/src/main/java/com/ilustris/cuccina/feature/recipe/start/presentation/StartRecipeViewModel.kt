@@ -30,6 +30,7 @@ class StartRecipeViewModel @Inject constructor(
     fun getPages(recipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         isFavorite.postValue(recipe.likes.contains(service.currentUser()!!.uid))
         val user = userService.getSingleData(recipe.userID)
+        val users = userService.getAllData()
         if (user.isSuccess) {
             val pageList = ArrayList<Page>()
             val stepPlural = if (recipe.steps.size > 1) "s" else ""
@@ -119,6 +120,20 @@ class StartRecipeViewModel @Inject constructor(
 
                 }
 
+
+                if (users.isSuccess) {
+                    val filterdList =
+                        (users.success.data as List<UserModel>).filter { it.uid != recipe.userID }
+                    if (filterdList.isNotEmpty()) {
+                        add(
+                            Page.OtherChefsPage(
+                                "Outros cozinheiros que você pode gostar...",
+                                "Que tal conhecer outros cozinheiros?",
+                                filterdList
+                            )
+                        )
+                    }
+                }
 
 
                 pages.postValue(pageList)

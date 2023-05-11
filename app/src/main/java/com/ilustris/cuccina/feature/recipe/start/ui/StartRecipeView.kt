@@ -29,6 +29,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.ilustris.cuccina.feature.profile.ui.PROFILE_ROUTE_IMPL
 import com.ilustris.cuccina.feature.recipe.domain.model.Recipe
 import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.presentation.StartRecipeViewModel
@@ -137,8 +138,10 @@ fun StartRecipeView(
                         width = Dimension.fillToConstraints
                     }) { index ->
                     getPageView(page = pages[index], { id ->
-                            navController.navigate(START_RECIPE_ROUTE_IMPL + id)
-                    }, { chefId -> }) {
+                        navController.navigate(START_RECIPE_ROUTE_IMPL + id)
+                    }, { chefId ->
+                        navController.navigate("$PROFILE_ROUTE_IMPL$chefId")
+                    }) {
                         navController.navigate(NEW_RECIPE_ROUTE)
                     }
                 }
