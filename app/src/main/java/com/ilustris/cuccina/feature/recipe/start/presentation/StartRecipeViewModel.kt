@@ -24,9 +24,11 @@ class StartRecipeViewModel @Inject constructor(
 
     val pages = MutableLiveData<List<Page>>()
     val isFavorite = MutableLiveData(false)
+    val isUserRecipe = MutableLiveData(false)
 
     fun getPages(recipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         isFavorite.postValue(recipe.likes.contains(service.currentUser()!!.uid))
+        isUserRecipe.postValue(recipe.userID == service.currentUser()!!.uid)
         val user = try {
             userService.getSingleData(recipe.userID).success.data as UserModel
         } catch (e: java.lang.Exception) {

@@ -47,6 +47,18 @@ class RecipeService : BaseService() {
         }
     }
 
+    override suspend fun deleteData(id: String): ServiceResult<DataException, Boolean> {
+        return try {
+            val recipe = getSingleData(id).success.data as Recipe
+            storageReference().storage.reference.child(recipe.name.lowercase().trim()).delete()
+                .await()
+            super.deleteData(recipe.id)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ServiceResult.Error(DataException.DELETE)
+        }
+    }
+
     override fun deserializeDataSnapshot(dataSnapshot: QueryDocumentSnapshot): Recipe {
         return dataSnapshot.toObject(Recipe::class.java)
     }
