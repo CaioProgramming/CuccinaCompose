@@ -66,8 +66,12 @@ fun NavigationGraph(navController: NavHostController, bottomPadding: Dp) {
             NewRecipeView(hiltViewModel(), navController)
         }
 
-        composable(BottomNavItem.PROFILE.route) {
-            ProfileView(hiltViewModel(), navController)
+        composable(
+            BottomNavItem.PROFILE.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) {
+            val userId = it.arguments?.getString("userId")
+            ProfileView(userId, hiltViewModel(), navController)
         }
 
         composable(

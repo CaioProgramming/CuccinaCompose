@@ -6,10 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -26,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ilustris.cuccina.ui.theme.CuccinaLoader
 import com.ilustris.cuccina.ui.theme.Page
-import com.ilustris.cuccina.ui.theme.annotatedPage
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -35,7 +31,7 @@ import com.skydoves.landscapist.glide.GlideImage
 fun ChefsPageView(page: Page.OtherChefsPage, openChefPage: (String) -> Unit) {
 
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(3),
+        columns = StaggeredGridCells.Fixed(2),
         modifier = Modifier
             .background(page.backColor ?: MaterialTheme.colorScheme.background)
             .padding(16.dp)
@@ -52,21 +48,6 @@ fun ChefsPageView(page: Page.OtherChefsPage, openChefPage: (String) -> Unit) {
                     .headlineLarge
                     .copy(textAlign = TextAlign.Center, color = textColor)
             )
-
-            Text(
-                text = annotatedPage(
-                    page.description,
-                    listOf("chefs"),
-                    MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                style = MaterialTheme
-                    .typography
-                    .bodyMedium
-                    .copy(textAlign = TextAlign.Center, color = textColor)
-            )
         }
 
         items(page.chefs.size) {
@@ -76,29 +57,30 @@ fun ChefsPageView(page: Page.OtherChefsPage, openChefPage: (String) -> Unit) {
                 imageOptions = ImageOptions(
                     alignment = Alignment.Center,
                     "",
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Crop
                 ),
                 loading = {
                     CuccinaLoader()
                 },
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(170.dp)
+                    .background(MaterialTheme.colorScheme.surface, CircleShape)
                     .clip(CircleShape)
-                    .padding(16.dp)
+                    .padding(8.dp)
                     .border(
-                        width = 5.dp,
+                        width = 3.dp,
                         brush = Brush.horizontalGradient(
                             colors = listOf(
                                 MaterialTheme.colorScheme.primary,
                                 MaterialTheme.colorScheme.secondary,
                                 MaterialTheme.colorScheme.tertiary
-                            ).shuffled()
+                            )
                         ),
                         shape = CircleShape
                     )
                     .clip(CircleShape)
                     .clickable {
-                        openChefPage(user.id)
+                        openChefPage(user.uid)
                     }
             )
         }

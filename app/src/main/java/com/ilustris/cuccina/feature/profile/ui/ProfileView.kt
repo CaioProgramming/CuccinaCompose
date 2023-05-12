@@ -45,18 +45,23 @@ import com.silent.ilustriscore.core.model.ViewModelBaseState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-const val PROFILE_ROUTE = "profile"
+const val PROFILE_ROUTE = "profile/{userId}"
+const val PROFILE_ROUTE_IMPL = "profile/"
 
 
 @Composable
-fun ProfileView(profileViewModel: ProfileViewModel, navController: NavController) {
+fun ProfileView(
+    userId: String? = null,
+    profileViewModel: ProfileViewModel,
+    navController: NavController
+) {
 
     val baseState = profileViewModel.viewModelState.observeAsState()
     val user = profileViewModel.user.observeAsState()
     val pages = profileViewModel.pages.observeAsState()
     val systemUiController = rememberSystemUiController()
     LaunchedEffect(Unit) {
-        profileViewModel.getUserData()
+        profileViewModel.getUserData(userId?.replace("{userId}", ""))
     }
 
     LaunchedEffect(user) {
@@ -207,6 +212,5 @@ fun ProfileView(profileViewModel: ProfileViewModel, navController: NavController
         }
 
     }
-
 
 }

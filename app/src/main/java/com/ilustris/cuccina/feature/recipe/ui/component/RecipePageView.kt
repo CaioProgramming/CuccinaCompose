@@ -89,57 +89,64 @@ fun RecipePageView(page: Page.RecipePage) {
                 previewPlaceholder = R.drawable.ic_cherries
             )
 
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                GlideImage(
-                    imageModel = { page.user.photoUrl },
-                    imageOptions = ImageOptions(
-                        alignment = Alignment.Center,
-                        "",
-                        contentScale = ContentScale.Crop
-                    ),
-                    failure = {
-                        Image(
-                            modifier = Modifier
-                                .size(70.dp)
-                                .clip(CircleShape)
-                                .padding(16.dp)
-                                .border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape),
-                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_cherries),
-                            contentDescription = page.user.name
-                        )
-                    },
-                    loading = {
-                        CuccinaLoader()
-                    },
+            page.user?.let {
+                Row(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface, CircleShape)
-                        .border(
-                            width = 2.dp,
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.secondary,
-                                    MaterialTheme.colorScheme.tertiary
-                                )
-                            ),
-                            shape = CircleShape
-                        )
-                )
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Text(
-                    text = "${page.user.name} • $formattedDate",
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-                )
+                    GlideImage(
+                        imageModel = { it.photoUrl },
+                        imageOptions = ImageOptions(
+                            alignment = Alignment.Center,
+                            "",
+                            contentScale = ContentScale.Crop
+                        ),
+                        failure = {
+                            Image(
+                                modifier = Modifier
+                                    .size(70.dp)
+                                    .clip(CircleShape)
+                                    .padding(16.dp)
+                                    .border(
+                                        2.dp,
+                                        MaterialTheme.colorScheme.onBackground,
+                                        CircleShape
+                                    ),
+                                imageVector = ImageVector.vectorResource(id = R.drawable.ic_cherries),
+                                contentDescription = page.user.name
+                            )
+                        },
+                        loading = {
+                            CuccinaLoader()
+                        },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface, CircleShape)
+                            .border(
+                                width = 2.dp,
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary,
+                                        MaterialTheme.colorScheme.secondary,
+                                        MaterialTheme.colorScheme.tertiary
+                                    )
+                                ),
+                                shape = CircleShape
+                            )
+                    )
+
+                    Text(
+                        text = "${it.name} • $formattedDate",
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
             }
+
 
             LazyRow(
                 verticalAlignment = Alignment.CenterVertically,
