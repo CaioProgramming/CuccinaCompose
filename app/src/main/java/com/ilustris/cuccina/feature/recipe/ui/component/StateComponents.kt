@@ -64,11 +64,10 @@ fun StateComponent(
 
             Text(
                 text = message,
-                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
             )
 
             if (action != null && buttonText != null) {
@@ -95,7 +94,7 @@ fun getStateComponent(state: ViewModelBaseState, action: (ViewModelBaseState) ->
 
 
     val message = when (state) {
-        ViewModelBaseState.RequireAuth -> "Você precisa estar logado para acessar essa funcionalidade"
+        ViewModelBaseState.RequireAuth -> "Faça login para começar a usar o app."
         ViewModelBaseState.DataDeletedState -> "Receita deletada com sucesso"
         ViewModelBaseState.LoadingState -> "Carregando..."
         ViewModelBaseState.LoadCompleteState -> "Carregamento completo"
@@ -108,14 +107,22 @@ fun getStateComponent(state: ViewModelBaseState, action: (ViewModelBaseState) ->
     }
 
     val buttonText = when (state) {
-        ViewModelBaseState.RequireAuth -> "Fazer login"
         ViewModelBaseState.DataDeletedState -> "Ok"
+        ViewModelBaseState.RequireAuth -> "Fazer login"
         is ViewModelBaseState.ErrorState -> "Tentar novamente"
         is ViewModelBaseState.DataSavedState -> "Ok"
         else -> null
     }
 
+    val animation = when (state) {
+        ViewModelBaseState.RequireAuth -> R.raw.noodles
+        is ViewModelBaseState.ErrorState -> R.raw.sad_planet
+        is ViewModelBaseState.DataSavedState -> R.raw.happytoast
+        else -> R.raw.cakerun
+    }
+
     StateComponent(
+        animation = animation,
         message = message,
         action = { action(state) },
         buttonText = buttonText

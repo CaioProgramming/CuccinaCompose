@@ -15,7 +15,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,9 +38,11 @@ import com.ilustris.cuccina.feature.home.ui.HOME_ROUTE
 import com.ilustris.cuccina.feature.profile.ui.PROFILE_ROUTE
 import com.ilustris.cuccina.feature.recipe.form.ui.NEW_RECIPE_ROUTE
 import com.ilustris.cuccina.feature.recipe.start.ui.START_RECIPE_ROUTE
+import com.ilustris.cuccina.feature.recipe.ui.component.getStateComponent
 import com.ilustris.cuccina.navigation.BottomNavigation
 import com.ilustris.cuccina.navigation.NavigationGraph
 import com.ilustris.cuccina.ui.theme.CuccinaTheme
+import com.silent.ilustriscore.core.model.ViewModelBaseState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -78,11 +82,6 @@ class MainActivity : ComponentActivity() {
                     .build()
 
 
-                if (appState.value == MainViewModel.MainState.RequireLogin) {
-                    signInLauncher.launch(signInIntent)
-                }
-
-
                 fun showAppBar(state: MainViewModel.MainState?): Boolean {
                     Log.i(javaClass.simpleName, "showAppBar: actual state -> $state")
                     return state != MainViewModel.MainState.HideNavigation
@@ -100,18 +99,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }) {
                     if (appState.value == MainViewModel.MainState.RequireLogin) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = "Você precisa estar logado para acessar o app...")
-                            Button(onClick = {
-                                signInLauncher.launch(signInIntent)
-                            }) {
-                                Text(text = "Fazer login")
-                            }
-                        }
+                        getStateComponent(state = ViewModelBaseState.RequireAuth, action = {
+                            signInLauncher.launch(signInIntent)
+                        })
                     } else {
                         NavigationGraph(navController = navController, bottomPadding)
                     }

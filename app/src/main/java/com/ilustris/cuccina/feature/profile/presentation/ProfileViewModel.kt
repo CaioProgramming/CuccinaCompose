@@ -14,6 +14,7 @@ import com.silent.ilustriscore.core.model.ServiceResult
 import com.silent.ilustriscore.core.model.ViewModelBaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -102,6 +103,7 @@ class ProfileViewModel @Inject constructor(
                 val uid = if (userId.isNullOrEmpty()) it.uid else userId
                 when (val userTask = service.getSingleData(uid)) {
                     is ServiceResult.Success -> {
+                        delay(1000)
                         user.postValue(userTask.data as UserModel)
                         updatePages(Page.ProfilePage(userModel = userTask.data as UserModel))
                     }

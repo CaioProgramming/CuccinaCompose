@@ -337,28 +337,31 @@ fun HomeView(homeViewModel: HomeViewModel?, navController: NavHostController) {
                     }
                 }
 
-                item {
-                    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-                    Text(
-                        text = "Todas as receitas foram obtidas através de sites públicos e não possuem fins lucrativos.",
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    )
-                    Text(
-                        text = "Desenvolvido por ilustris em 2019 - $currentYear",
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontStyle = FontStyle.Italic,
-                            color = MaterialColor.LightBlueA100
+                if (homeList?.value?.isNotEmpty() == true) {
+                    item {
+                        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+                        Text(
+                            text = "Todas as receitas foram obtidas através de sites públicos e não possuem fins lucrativos.",
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
                         )
-                    )
+                        Text(
+                            text = "Desenvolvido por ilustris em 2019 - $currentYear",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontStyle = FontStyle.Italic,
+                                color = MaterialColor.LightBlueA100
+                            )
+                        )
+                    }
                 }
+
             }
         }
 
