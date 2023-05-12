@@ -124,7 +124,7 @@ class StartRecipeViewModel @Inject constructor(
 
             if (users.isSuccess) {
                 val filterdList =
-                    (users.success.data as List<UserModel>).filter { it.uid != recipe.userID }
+                    (users.success.data as List<UserModel>).filter { it.uid != recipe.userID && it.uid != service.currentUser()!!.uid }
                 if (filterdList.isNotEmpty()) {
                     add(
                         Page.OtherChefsPage(
